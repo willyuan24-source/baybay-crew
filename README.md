@@ -11,6 +11,14 @@ Built at HACK 2026 on top of [BAYLINK](https://www.baylink.us) (a bilingual Bay 
 project) — **new in this hackathon:** the knowledge graph export + Neo4j model, the four-agent crew, the Band transport,
 the Crusoe reasoning layer, the verification loop and this demo UI.
 
+## Demo
+
+▶ **[demo/baybay-crew-demo.mp4](demo/baybay-crew-demo.mp4)** (1:46, narrated) — a real run: Scout queries Neo4j, Planner drafts, Checker **vetoes** round 1 in the Band room, Planner fixes it, all stops verified.
+
+![BAYBAY Crew UI](demo/screenshot.png)
+
+![The live Band room: Checker vetoes the draft](demo/band-room.jpg)
+
 ## Why a crew (and not one chatbot)
 
 A single LLM happily invents events, gets dates wrong and sends families to 21+ shows. The crew splits the job so that
@@ -36,7 +44,7 @@ flowchart LR
     C -->|"@BAYBAY approved plan"| B
   end
   S & P & C -->|Cypher| N[(Neo4j Aura<br/>1,594 nodes · 3,074 rels)]
-  S & P & C -->|chat.completions| X[[Crusoe Managed Inference<br/>Kimi K2.6 · Qwen 3.8]]
+  S & P & C -->|chat.completions| X[[Crusoe Managed Inference<br/>DeepSeek-V4-Flash · DeepSeek-V4-Pro · Gemma 4]]
   B -->|plan + trace + graph| U
 ```
 
@@ -46,8 +54,9 @@ flowchart LR
   results are Band room events. **Delete test:** delete the room and the crew stops — no side channel exists.
 - **Neo4j is the memory and the source of truth.** The Scout's and Checker's answers are Cypher results; the plan's
   transit hints are `shortestPath` over `(:Station)-[:NEXT]->(:Station)`; the UI draws the plan's subgraph.
-- **Crusoe runs every LLM step** on open-weight models (OpenAI-compatible API); every call shows provider, model and
-  latency in the UI. The Checker can use a *different* open model than the Planner (cross-model review).
+- **Crusoe runs every LLM step** on open-weight models (OpenAI-compatible API), one model per agent: Scout on
+  DeepSeek-V4-Flash (filters in ~0.7 s), Planner on DeepSeek-V4-Pro, Checker on Gemma 4 31B — a *different* model reviews
+  the plan (cross-model veto). Every call shows provider, model and latency in the UI.
 
 ### The graph (exported from BAYLINK)
 

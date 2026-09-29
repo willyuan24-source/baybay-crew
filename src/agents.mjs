@@ -15,7 +15,7 @@ import { findEvents, findOffers, findPlaces, getEvent, getOffer, route, subgraph
  *   Checker  verify  every stop re-read from the graph (date, free, age limits, validity) + a second open model's review;
  *                    wrong → back to @Planner (max 2 rounds); right → @BAYBAY
  */
-const MAX_ROUNDS = 2;
+const MAX_ROUNDS = 3;
 const t = (lang, zh, en) => (lang === 'en' ? en : zh);
 
 export function startCrew(room) {
@@ -90,7 +90,7 @@ export function startCrew(room) {
     const plan = await chat({
       ...ctx, json: true, maxTokens: 5000,
       system: `You are Planner, a San Francisco local who plans a realistic, relaxed day out. Use ONLY the candidates given (never invent a place or event). Write in ${lang === 'en' ? 'English' : 'Simplified Chinese'}. Reply with ONE JSON object only.`,
-      user: `Visitor: ${request.text}\nDate: ${request.date}\nFilters: ${JSON.stringify(filters ?? {})}\n${issues.length ? `Your last plan was ${JSON.stringify(previous ?? [])}. Checker found these problems in it — fix every one:\n- ${issues.join('\n- ')}\n` : ''}Candidates:\n${JSON.stringify(candidates)}\n\nReturn {"title": "short catchy title", "stops": [{"time": "HH:MM", "kind": "event"|"offer"|"place", "id": "<candidate id>", "name": "...", "why": "one warm sentence, why it fits this visitor"}], "notes": ["1-3 practical tips"]}. 3 to 5 stops, in time order, keep neighbourhoods close together, respect each event's hours (the "when" text), prefer free stops when asked.`,
+      user: `Visitor: ${request.text}\nDate: ${request.date}\nFilters: ${JSON.stringify(filters ?? {})}\n${issues.length ? `Your last plan was ${JSON.stringify(previous ?? [])}. Checker found these problems in it — fix every one:\n- ${issues.join('\n- ')}\n` : ''}Candidates:\n${JSON.stringify(candidates)}\n\nReturn {"title": "short catchy title", "stops": [{"time": "HH:MM", "kind": "event"|"offer"|"place", "id": "<candidate id>", "name": "...", "why": "one warm sentence, why it fits this visitor"}], "notes": ["1-3 practical tips"]}. 3 to 5 stops, in time order, keep neighbourhoods close together, respect each event's hours (the "when" text), prefer free stops when asked. EVERY stop's "id" must be the id of one candidate — never add a neighbourhood, a meal or a walk as its own stop; if the visitor wants food or a break, mention it in the "why" of a nearby candidate stop instead.`,
       fallback: () => rulePlan(candidates, lang),
     });
     const byId = new Map([...candidates.events.map(e => [e.id, { ...e, kind: 'event' }]), ...candidates.offers.map(o => [o.id, { ...o, kind: 'offer' }]), ...candidates.places.map(p => [p.id, { ...p, kind: 'place' }])]);

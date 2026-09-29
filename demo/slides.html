@@ -1,0 +1,69 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>slides</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1440px; height: 900px; overflow: hidden; background: #faf7f2; font-family: "Segoe UI", system-ui, sans-serif; color: #1d2b2a; }
+  .slide { display: none; width: 1440px; height: 900px; position: relative; }
+  body[data-s="title"] #title, body[data-s="arch"] #arch, body[data-s="end"] #end { display: block; }
+  #title { background: url(key.webp) center/cover; }
+  #title .veil { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(250,247,242,.96) 0%, rgba(250,247,242,.88) 38%, rgba(250,247,242,0) 62%); }
+  #title .txt { position: absolute; left: 90px; top: 210px; width: 640px; }
+  h1 { font-size: 88px; line-height: 1; letter-spacing: -2px; }
+  h1 span { color: #1f8a85; }
+  .sub { font-size: 30px; margin-top: 26px; line-height: 1.35; color: #3a4a48; }
+  .pills { display: flex; gap: 14px; margin-top: 40px; flex-wrap: wrap; }
+  .pill { padding: 12px 22px; border-radius: 999px; font-weight: 700; font-size: 22px; background: #fff; box-shadow: 0 4px 18px rgba(0,0,0,.08); }
+  .pill.c { color: #3d7a1e; } .pill.n { color: #0a6fbf; } .pill.b { color: #1f8a85; }
+  .event { font-size: 18px; color: #6b7a78; margin-top: 30px; }
+  #arch { padding: 60px 80px; }
+  #arch h2 { font-size: 46px; margin-bottom: 30px; }
+  .room { border: 3px dashed #1f8a85; border-radius: 28px; padding: 34px 30px 26px; position: relative; background: #fff; }
+  .room .tag { position: absolute; top: -18px; left: 30px; background: #1f8a85; color: #fff; font-weight: 700; padding: 6px 16px; border-radius: 10px; font-size: 20px; }
+  .flow { display: flex; align-items: center; justify-content: space-between; }
+  .ag { width: 230px; border-radius: 20px; padding: 20px; color: #fff; box-shadow: 0 8px 22px rgba(0,0,0,.12); }
+  .ag b { font-size: 28px; display: block; } .ag i { font-style: normal; font-size: 17px; opacity: .95; line-height: 1.35; display: block; margin-top: 8px; }
+  .a1 { background: #1f8a85; } .a2 { background: #e07a2f; } .a3 { background: #7a5cc7; } .a4 { background: #3a9a4a; }
+  .arr { font-size: 38px; color: #9aa6a4; font-weight: 700; }
+  .veto { text-align: right; margin: 16px 40px 0 0; font-size: 21px; color: #b3402a; font-weight: 700; }
+  .below { display: flex; gap: 30px; margin-top: 34px; }
+  .box { flex: 1; border-radius: 22px; padding: 24px 28px; background: #fff; box-shadow: 0 6px 20px rgba(0,0,0,.07); }
+  .box b { font-size: 26px; } .box p { font-size: 19px; margin-top: 10px; line-height: 1.45; color: #3a4a48; }
+  .box.n b { color: #0a6fbf; } .box.c b { color: #3d7a1e; }
+  code { font-family: Consolas, monospace; font-size: 16px; background: #f1ede6; padding: 2px 6px; border-radius: 6px; }
+  #end { display: none; text-align: center; padding-top: 250px; }
+  body[data-s="end"] #end { display: block; }
+  #end h1 { font-size: 80px; } #end .sub { margin-top: 24px; }
+  #end .gh { margin-top: 44px; font-size: 30px; font-weight: 700; color: #1f8a85; }
+</style></head>
+<body data-s="title">
+<section class="slide" id="title"><div class="veil"></div><div class="txt">
+  <h1>BAYBAY <span>Crew</span></h1>
+  <p class="sub">Four AI agents plan a <b>real</b> San Francisco day — every stop verified against a knowledge graph before you see it.</p>
+  <div class="pills"><span class="pill c">⚡ Crusoe</span><span class="pill n">◉ Neo4j</span><span class="pill b">▣ Band</span></div>
+  <p class="event">The AI Conference Hack Day 2026 · built on BAYLINK (baylink.us)</p>
+</div></section>
+
+<section class="slide" id="arch">
+  <h2>How the crew works</h2>
+  <div class="room"><span class="tag">Band room — the only channel between agents</span>
+    <div class="flow">
+      <div class="ag a1"><b>BAYBAY</b><i>host · takes the request, delivers the verified plan</i></div><span class="arr">→</span>
+      <div class="ag a2"><b>Scout</b><i>request → filters → Cypher on Neo4j: events, offers, places, transit</i></div><span class="arr">→</span>
+      <div class="ag a3"><b>Planner</b><i>3–5 stops only from the candidates; transit = graph shortest path</i></div><span class="arr">→</span>
+      <div class="ag a4"><b>Checker</b><i>re-reads every stop from the graph; a second model judges the fit</i></div>
+    </div>
+    <p class="veto">↩ Checker can veto and send the plan back to Planner</p>
+  </div>
+  <div class="below">
+    <div class="box n"><b>Neo4j Aura · 1,594 nodes · 3,053 rels</b><p>BAYLINK's real catalog: 267 dated events, 72 neighbourhoods, 161 stations on 7 lines, free-admission offers. <code>(:Event)-[:AT]->(:Venue)-[:NEAR]->(:Station)</code></p></div>
+    <div class="box c"><b>Crusoe Managed Inference</b><p>Open models, one per agent: DeepSeek-V4-Flash (Scout), DeepSeek-V4-Pro (Planner), Gemma 4 (Checker). Every call shown with model + latency.</p></div>
+  </div>
+</section>
+
+<section class="slide" id="end">
+  <h1>BAYBAY <span style="color:#1f8a85">Crew</span></h1>
+  <p class="sub">Crusoe thinks · Neo4j remembers · Band coordinates</p>
+  <div class="pills" style="justify-content:center"><span class="pill c">⚡ Crusoe</span><span class="pill n">◉ Neo4j</span><span class="pill b">▣ Band</span></div>
+  <p class="gh">github.com/willyuan24-source/baybay-crew</p>
+</section>
+</body></html>
