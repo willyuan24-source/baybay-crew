@@ -1,0 +1,19 @@
+{
+  "name": "baybay-crew",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "BAYBAY Crew: three agents (Scout, Planner, Checker) coordinate in a Band room to plan a real San Francisco day from a Neo4j graph of BAYLINK's catalog, reasoning on Crusoe Managed Inference.",
+  "scripts": {
+    "export": "node src/export-graph.mjs",
+    "load": "node src/load-neo4j.mjs",
+    "start": "node src/server.mjs",
+    "check": "node src/check.mjs"
+  },
+  "dependencies": {
+    "@band-ai/sdk": "^0.4.7",
+    "dotenv": "^18.0.4",
+    "neo4j-driver": "^6.2.0",
+    "openai": "^7.25.0"
+  }
+}
