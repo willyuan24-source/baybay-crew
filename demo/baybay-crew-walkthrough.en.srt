@@ -1,0 +1,176 @@
+1
+00:00:00,050 --> 00:00:05,517
+Ask any AI chatbot to plan a day in San Francisco, and it will happily
+
+2
+00:00:05,617 --> 00:00:11,323
+invent events, get dates wrong, or send a family with kids to a 21+ show.
+
+3
+00:00:11,423 --> 00:00:13,153
+BAYBAY Crew fixes that:
+
+4
+00:00:13,253 --> 00:00:18,561
+four AI agents plan a real day, where every stop comes from verified
+
+5
+00:00:18,661 --> 00:00:22,061
+data, and is checked before you ever see it.
+
+6
+00:00:22,761 --> 00:00:27,945
+The four agents, BAYBAY the host, Scout, Planner and Checker, coordinate
+
+7
+00:00:28,045 --> 00:00:29,781
+only through a Band room.
+
+8
+00:00:29,881 --> 00:00:34,845
+Every handoff is a Band message with an @mention, and the whole state
+
+9
+00:00:34,945 --> 00:00:40,204
+travels inside those messages, so if you delete the room, the crew stops.
+
+10
+00:00:40,304 --> 00:00:45,121
+Scout and Checker query a Neo4j knowledge graph built from BAYLINK:
+
+11
+00:00:45,221 --> 00:00:50,113
+about 1,600 nodes of real, dated events, venues, neighborhoods, free
+
+12
+00:00:50,213 --> 00:00:52,535
+museum days and transit stations.
+
+13
+00:00:52,635 --> 00:00:56,572
+And every reasoning step runs on open models on Crusoe:
+
+14
+00:00:56,672 --> 00:01:01,637
+DeepSeek V4 Flash for Scout, DeepSeek V4 Pro for Planner, and Gemma 4
+
+15
+00:01:01,737 --> 00:01:05,380
+for Checker, so a different model reviews the plan.
+
+16
+00:01:06,080 --> 00:01:07,150
+Let's run it live:
+
+17
+00:01:07,250 --> 00:01:11,505
+a Saturday with two kids, live music and something to eat, by Muni.
+
+18
+00:01:11,605 --> 00:01:14,235
+The top bar shows all three sponsors live.
+
+19
+00:01:14,335 --> 00:01:18,719
+Scout turns the request into filters on Crusoe in under a second, and
+
+20
+00:01:18,819 --> 00:01:20,409
+runs Cypher on Neo4j Aura.
+
+21
+00:01:20,509 --> 00:01:25,154
+The graph lights up with the venues, neighborhoods and stations it found.
+
+22
+00:01:25,254 --> 00:01:26,649
+Planner drafts the day.
+
+23
+00:01:26,749 --> 00:01:30,938
+Then Checker re-reads every stop from the graph, a different model
+
+24
+00:01:31,038 --> 00:01:35,163
+judges the fit, and here it vetoes round one and sends it back to
+
+25
+00:01:35,263 --> 00:01:37,698
+Planner with concrete fixes. Round two:
+
+26
+00:01:37,798 --> 00:01:39,648
+every stop verified, approved.
+
+27
+00:01:40,348 --> 00:01:42,438
+The result is a verified plan:
+
+28
+00:01:42,538 --> 00:01:46,744
+free stops, transit hints, and links to real BAYLINK pages.
+
+29
+00:01:46,844 --> 00:01:52,000
+The dashboard answers graph questions, like free events by neighborhood,
+
+30
+00:01:52,100 --> 00:01:57,183
+the transit hubs with the most attractions, and family events per line.
+
+31
+00:01:57,283 --> 00:02:00,979
+And the Cypher log shows every query the agents ran.
+
+32
+00:02:01,679 --> 00:02:04,306
+This is the same run inside the Band room.
+
+33
+00:02:04,406 --> 00:02:08,982
+Scout hands off to Planner, Planner to Checker, and here Checker rejects
+
+34
+00:02:09,082 --> 00:02:11,904
+round one, mentioning Planner with the fixes.
+
+35
+00:02:12,004 --> 00:02:15,346
+Planner answers with round two, and Checker approves.
+
+36
+00:02:15,446 --> 00:02:18,853
+Thoughts and tool calls are posted as room events too.
+
+37
+00:02:19,553 --> 00:02:23,237
+In the code, the Checker re-queries every stop in Neo4j:
+
+38
+00:02:23,337 --> 00:02:25,940
+the date, free or paid, the minimum age.
+
+39
+00:02:26,040 --> 00:02:30,399
+Then it asks a second Crusoe model for the fit, and if anything is
+
+40
+00:02:30,499 --> 00:02:33,305
+wrong, it sends the plan back through Band.
+
+41
+00:02:33,405 --> 00:02:38,034
+And each agent only acts on messages that Band delivers to it, so Band
+
+42
+00:02:38,134 --> 00:02:40,264
+really is the coordination layer.
+
+43
+00:02:40,964 --> 00:02:42,245
+BAYBAY Crew.
+
+44
+00:02:42,345 --> 00:02:49,153
+Crusoe thinks, Neo4j remembers, Band coordinates. Thank you!
+

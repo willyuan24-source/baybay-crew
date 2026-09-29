@@ -13,7 +13,7 @@ the Crusoe reasoning layer, the verification loop and this demo UI.
 
 ## Demo
 
-▶ **[demo/baybay-crew-demo.mp4](demo/baybay-crew-demo.mp4)** (1:46, narrated) — a real run: Scout queries Neo4j, Planner drafts, Checker **vetoes** round 1 in the Band room, Planner fixes it, all stops verified.
+▶ **[demo/baybay-crew-walkthrough.mp4](demo/baybay-crew-walkthrough.mp4)** (2:50, narrated, English subtitles; [.srt](demo/baybay-crew-walkthrough.en.srt)): the problem, the stack, a live run, the Band room and the code. Short cut: **[demo/baybay-crew-demo.mp4](demo/baybay-crew-demo.mp4)** (1:46) — a real run: Scout queries Neo4j, Planner drafts, Checker **vetoes** round 1 in the Band room, Planner fixes it, all stops verified.
 
 ![BAYBAY Crew UI](demo/screenshot.png)
 
