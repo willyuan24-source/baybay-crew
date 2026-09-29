@@ -1,3 +1,5 @@
+process.on('unhandledRejection', e => console.error('[unhandled]', e?.message ?? e));
+process.on('uncaughtException', e => console.error('[uncaught]', e?.message ?? e));
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname } from 'node:path';
