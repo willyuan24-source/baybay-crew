@@ -1,5 +1,7 @@
 # BAYBAY Crew 🦦 — real San Francisco days, planned by a crew of agents
 
+🏆 **Winner — Best Use of Neo4j** ($500 Neo4j Aura credits), The AI Conference Hack Day 2026 (San Francisco, 2026-09-29, 57 projects). Full project handoff: [docs/HANDOFF.md](docs/HANDOFF.md).
+
 **Four agents coordinate in a Band room to plan a real day out in San Francisco from a Neo4j knowledge graph of BAYLINK's
 verified local catalog, reasoning with open models on Crusoe Managed Inference.**
 
