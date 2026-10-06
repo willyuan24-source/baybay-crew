@@ -6,7 +6,7 @@
 <title>BAYBAY Crew</title>
 <style>
 :root{
-  --bg:#faf7f2; --card:#ffffff; --ink:#23201c; --muted:#7a7268; --line:#ece5da; --soft:#f5f0e8;
+  --bg:#faf7f2; --card:#ffffff; --ink:#23201c; --muted:#6e665c; --line:#ece5da; --soft:#f5f0e8;
   --teal:#1f8a85; --scout:#e07a2f; --planner:#7a5cc7; --checker:#3a9a4a; --user:#8a8f98;
   --ok:#2fa84f; --bad:#d64545; --warn:#e3a21a;
   --radius:14px; --shadow:0 1px 2px rgba(60,40,20,.05),0 6px 22px rgba(60,40,20,.07);
@@ -17,6 +17,8 @@ html,body{margin:0;height:100%}
 body{background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;display:flex;flex-direction:column;overflow:hidden;-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit}
 [hidden]{display:none !important}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+textarea:focus-visible,.datein:focus-visible{outline:none}
 
 /* top bar */
 .top{display:flex;align-items:center;gap:12px 16px;padding:12px 20px;flex-wrap:wrap}
@@ -50,10 +52,11 @@ textarea:focus,.datein:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(
 .row{display:flex;gap:10px;margin-top:10px;align-items:flex-end;flex-wrap:wrap}
 .date{display:flex;flex-direction:column;font-size:11.5px;color:var(--muted);gap:3px}
 .datein{border:1px solid var(--line);border-radius:10px;padding:9px 10px;font:inherit;background:#fffdfa;color:var(--ink);outline:none;height:46px}
-.go{flex:1;min-width:150px;height:46px;border:0;border-radius:12px;background:linear-gradient(135deg,#1f8a85,#27a79f);color:#fff;font-size:16px;font-weight:700;padding:0 18px;cursor:pointer;box-shadow:0 6px 16px rgba(31,138,133,.28);transition:transform .12s ease,box-shadow .12s ease}
+.go{flex:1;min-width:150px;height:46px;border:0;border-radius:12px;background:linear-gradient(135deg,#17736f,#1b7f7a);color:#fff;font-size:16px;font-weight:700;padding:0 18px;cursor:pointer;box-shadow:0 6px 16px rgba(31,138,133,.28);transition:transform .12s ease,box-shadow .12s ease}
 .go:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(31,138,133,.34)}
 .go:disabled{opacity:.65;cursor:progress;transform:none}
 .hint{font-size:11.5px;color:var(--muted);margin-top:6px}
+.datenote{color:#8f590c;background:#fdf5e6;border-radius:8px;padding:5px 9px}
 .chips-lbl{font-size:12px;color:var(--muted);margin:14px 0 6px;font-weight:600;letter-spacing:.02em}
 .chips{display:flex;flex-wrap:wrap;gap:7px}
 .chip{border:1px solid var(--line);background:#fffdfa;border-radius:999px;padding:6px 12px;font-size:12.5px;cursor:pointer;text-align:left;line-height:1.35;max-width:100%}
@@ -73,7 +76,7 @@ textarea:focus,.datein:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(
 @keyframes shim{from{background-position:200% 0}to{background-position:-200% 0}}
 .stops{list-style:none;margin:12px 0 0;padding:0}
 .stop{display:grid;grid-template-columns:52px 1fr;gap:10px}
-.st-time{font-weight:800;font-variant-numeric:tabular-nums;color:var(--teal);text-align:right;padding-top:1px;font-size:13.5px}
+.st-time{font-weight:800;font-variant-numeric:tabular-nums;color:#19716d;text-align:right;padding-top:1px;font-size:13.5px}
 .st-body{border-left:2px solid var(--line);padding:0 0 16px 14px;position:relative;min-width:0}
 .st-body::before{content:"";position:absolute;left:-6px;top:5px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid var(--teal)}
 .stop:last-child .st-body{padding-bottom:4px}
@@ -86,14 +89,16 @@ textarea:focus,.datein:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(
 .tag{border-radius:999px;padding:1px 8px;line-height:1.6}
 .tag.free{background:#e3f4e6;color:#1f7a34;font-weight:800;letter-spacing:.04em}
 .tag.tr{background:#eef3fb;color:#2c5b94}
-.tag.vok{background:#eef8f0;color:var(--checker);font-weight:700}
-.tag.vno{background:#fdf5e6;color:#a8690f;font-weight:600}
+.tag.who{background:#f4efe6;color:#5e564a}
+.tag.vok{background:#eef8f0;color:#23753a;font-weight:700}
+.tag.vno{background:#fdf5e6;color:#8f590c;font-weight:600}
 .notes{margin:10px 0 0;padding:10px 12px 10px 28px;background:var(--soft);border-radius:10px;font-size:12.5px}
 .notes li+li{margin-top:3px}
 .verdict{margin-top:12px;border-radius:12px;padding:10px 12px;background:#eef8f0;color:#256b33;font-weight:700;font-size:13.5px;border:1px solid #d3ecd8}
 .verdict.no{background:#fdf0ef;color:#a33;border-color:#f3d2cf}
 .verdict ul{margin:6px 0 0;padding-left:18px;font-weight:500;font-size:12.5px}
 .verdict .sub{font-weight:600;font-size:12px;margin-top:6px;opacity:.85}
+.verdict .review{font-weight:500;font-size:12.5px;margin-top:4px}
 
 /* room */
 .room{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
@@ -105,21 +110,21 @@ textarea:focus,.datein:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(
 .agents{display:flex;gap:6px;flex-wrap:wrap}
 .agent{--c:#888;display:inline-flex;align-items:center;gap:5px;font-size:12px;border:1px solid var(--line);border-radius:999px;padding:2px 9px 2px 3px;background:#fffdfa}
 .agent .av{width:18px;height:18px;font-size:10px}
-.agent b{color:var(--c)}
+.agent b{color:var(--c);color:color-mix(in srgb,var(--c) 70%,#000)}
 .agent .dot{width:7px;height:7px;box-shadow:none}
-.conn{font-size:11.5px;color:#a8690f;background:#fdf5e6;border-radius:8px;padding:3px 8px;align-self:flex-start}
+.conn{font-size:11.5px;color:#8f590c;background:#fdf5e6;border-radius:8px;padding:3px 8px;align-self:flex-start}
 .trace{flex:1;min-height:0;overflow:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
 .av{--c:#888;width:22px;height:22px;border-radius:50%;background:var(--c);color:#fff;display:inline-grid;place-items:center;font-weight:800;font-size:11px;flex:none}
 .msg{--c:#888;background:#fff;border:1px solid var(--line);border-left:4px solid var(--c);border-radius:12px;padding:8px 12px 10px;max-width:94%;align-self:flex-start;box-shadow:0 1px 2px rgba(0,0,0,.03);animation:pop .22s ease-out;min-width:0}
 @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .mh{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;margin-bottom:3px}
-.mh .who{font-weight:800;color:var(--c);font-size:13px}
-.mh .arrow{color:#b8afa2}
-.mh .tm{margin-left:auto;color:#b0a698;font-size:11px;font-variant-numeric:tabular-nums}
+.mh .who{font-weight:800;color:var(--c);color:color-mix(in srgb,var(--c) 70%,#000);font-size:13px}
+.mh .arrow{color:var(--muted)}
+.mh .tm{margin-left:auto;color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
 .mh .kind{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--soft);border-radius:6px;padding:0 6px}
-.at{--c:#888;background:#f3f0ea;background:color-mix(in srgb,var(--c) 13%,#fff);color:var(--c);border-radius:999px;padding:0 7px;font-weight:700;font-size:11.5px;white-space:nowrap}
+.at{--c:#888;background:#f3f0ea;background:color-mix(in srgb,var(--c) 13%,#fff);color:var(--c);color:color-mix(in srgb,var(--c) 70%,#000);border-radius:999px;padding:0 7px;font-weight:700;font-size:11.5px;white-space:nowrap}
 .txt{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}
-.mention{color:var(--c);font-weight:700}
+.mention{color:var(--c);color:color-mix(in srgb,var(--c) 70%,#000);font-weight:700}
 .msg.me{align-self:flex-end;border-left-width:1px;border-right:4px solid var(--c);background:#f7f5f1}
 .msg.minor{background:var(--soft);border-color:transparent;border-left:3px solid var(--c);font-size:12.5px;color:#5f584f;padding:5px 10px 7px;margin-left:26px;max-width:calc(94% - 26px);box-shadow:none}
 .msg.minor .mh{font-size:11px}
@@ -127,7 +132,7 @@ textarea:focus,.datein:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(
 .msg.k-task{border-style:dashed;border-left-style:solid}
 .msg.k-error{border-left-color:var(--bad);background:#fff5f4}
 pre.code{font-family:var(--mono);font-size:11.5px;line-height:1.45;background:#fbf9f5;border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:4px 0 0;max-height:260px;overflow:auto;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;color:#3b3229}
-details.fold summary{cursor:pointer;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;outline:none}
+details.fold summary{cursor:pointer;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 details.fold[open] summary{margin-bottom:2px}
 .badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .badges:empty{display:none}
@@ -139,7 +144,7 @@ details.fold[open] summary{margin-bottom:2px}
 .empty p{margin:0 0 12px}
 .crew{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .crew li{--c:#888;display:flex;align-items:center;gap:9px;background:#fffdfa;border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:8px 10px}
-.crew b{color:var(--c);min-width:62px}
+.crew b{color:var(--c);color:color-mix(in srgb,var(--c) 70%,#000);min-width:62px}
 .thinking{display:flex;align-items:center;gap:10px;padding:8px 16px;font-size:13px;color:var(--muted);border-top:1px dashed var(--line);background:#fffdfa}
 .dots{display:inline-flex;gap:4px}
 .dots i{--c:#888;display:block;width:9px;height:9px;border-radius:50%;background:var(--c);animation:pulse 1.1s infinite ease-in-out}
@@ -154,7 +159,7 @@ details.fold[open] summary{margin-bottom:2px}
 .tabs{display:flex;gap:2px;padding:6px 8px 0;border-bottom:1px solid var(--line);flex:none;overflow-x:auto}
 .tabs button{border:0;background:none;font-weight:700;padding:9px 12px 8px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
 .tabs button.on{color:var(--ink);border-bottom-color:var(--teal)}
-.cnt{background:var(--scout);color:#fff;border-radius:999px;font-size:10.5px;padding:0 6px;margin-left:5px;font-weight:700}
+.cnt{background:#b85a17;color:#fff;border-radius:999px;font-size:10.5px;padding:0 6px;margin-left:5px;font-weight:700}
 .panel{display:none;flex:1;min-height:0;flex-direction:column}
 .panel.on{display:flex}
 .gbar{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:12px;color:var(--muted);flex:none;flex-wrap:wrap}
@@ -180,7 +185,7 @@ div.vis-tooltip{font-family:inherit !important;font-size:12px !important;backgro
 .dhead p{margin:2px 0 0;font-size:12px;color:var(--muted)}
 .dq{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:12px;background:#fff}
 .dq h4{margin:0 0 4px;font-size:14px}
-.dq details summary{cursor:pointer;color:var(--teal);font-size:12px;font-weight:600;outline:none}
+.dq details summary{cursor:pointer;color:#19716d;font-size:12px;font-weight:600}
 .tw{overflow:auto;max-height:280px;margin-top:8px;border-radius:8px;border:1px solid #f1ebe2}
 table{border-collapse:collapse;width:100%;font-size:12.5px}
 th{text-align:left;position:sticky;top:0;background:#faf6ef;font-weight:700;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -189,9 +194,11 @@ td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 tr:last-child td{border-bottom:0}
 .cy{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:10px;background:#fff;animation:pop .22s ease-out}
 .cyh{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:11.5px;color:var(--muted)}
-.cyh .who{--c:#888;color:var(--c);font-weight:800}
+.cyh .who{--c:#888;color:var(--c);color:color-mix(in srgb,var(--c) 70%,#000);font-weight:800}
 .cyh .tm{margin-left:auto}
 .cyh .rows{background:#eaf2fb;color:#2c5b94;border-radius:999px;padding:0 7px;font-weight:700}
+.cyh .eng{background:#fdf5e6;color:#8f590c;border-radius:999px;padding:0 7px;font-weight:600}
+.cyh .eng.neo{background:#e6f3f2;color:#19716d}
 
 @media (max-width:1100px){
   html,body{height:auto}
@@ -229,8 +236,8 @@ tr:last-child td{border-bottom:0}
     <span class="pill" id="pBand"></span>
   </div>
   <div class="langsw" role="group" aria-label="Language">
-    <button type="button" data-lang="zh">中文</button>
-    <button type="button" data-lang="en">EN</button>
+    <button type="button" data-lang="zh" lang="zh-CN" aria-pressed="false">中文</button>
+    <button type="button" data-lang="en" lang="en" aria-pressed="false">EN</button>
   </div>
 </header>
 
@@ -238,39 +245,40 @@ tr:last-child td{border-bottom:0}
   <div class="col left">
     <section class="card ask">
       <label class="lbl" for="q" data-i18n="askLabel"></label>
-      <textarea id="q" rows="3"></textarea>
+      <textarea id="q" rows="3" maxlength="500"></textarea>
       <div class="row">
         <label class="date"><span data-i18n="dateLabel"></span><input type="date" id="date" class="datein"></label>
         <button type="button" id="go" class="go"></button>
       </div>
+      <div class="hint datenote" id="dateNote" aria-live="polite" hidden></div>
       <div class="hint" data-i18n="hint"></div>
       <div class="chips-lbl" data-i18n="try"></div>
       <div class="chips" id="chips"></div>
     </section>
-    <section class="card plan" id="plan"></section>
+    <section class="card plan" id="plan" aria-live="polite"></section>
   </div>
 
   <div class="col mid">
     <section class="card room">
       <div class="room-h">
-        <div class="r1"><h2 data-i18n="roomTitle"></h2><span class="transport" id="transport"></span></div>
+        <div class="r1"><h2 id="roomTitle" data-i18n="roomTitle"></h2><span class="transport" id="transport"></span></div>
         <div class="agents" id="agents"></div>
-        <div class="conn" id="conn" hidden></div>
+        <div class="conn" id="conn" role="status" hidden></div>
       </div>
-      <div class="trace" id="trace"></div>
-      <div class="thinking" id="thinking" hidden></div>
+      <div class="trace" id="trace" role="log" aria-live="polite" aria-labelledby="roomTitle"></div>
+      <div class="thinking" id="thinking" role="status" hidden></div>
       <div class="stats" id="stats" hidden></div>
     </section>
   </div>
 
   <div class="col rightcol">
     <section class="card right">
-      <nav class="tabs" id="tabs">
-        <button type="button" data-tab="graph" class="on"><span data-i18n="tabGraph"></span></button>
-        <button type="button" data-tab="dash"><span data-i18n="tabDash"></span></button>
-        <button type="button" data-tab="cypher"><span data-i18n="tabCypher"></span><span class="cnt" id="cypherCnt" hidden></span></button>
+      <nav class="tabs" id="tabs" role="tablist">
+        <button type="button" data-tab="graph" class="on" role="tab" id="t-graph" aria-controls="p-graph" aria-selected="true"><span data-i18n="tabGraph"></span></button>
+        <button type="button" data-tab="dash" role="tab" id="t-dash" aria-controls="p-dash" aria-selected="false"><span data-i18n="tabDash"></span></button>
+        <button type="button" data-tab="cypher" role="tab" id="t-cypher" aria-controls="p-cypher" aria-selected="false"><span data-i18n="tabCypher"></span><span class="cnt" id="cypherCnt" hidden></span></button>
       </nav>
-      <div class="panel on" id="p-graph">
+      <div class="panel on" id="p-graph" role="tabpanel" aria-labelledby="t-graph">
         <div class="gbar">
           <span class="info" id="ginfo"></span>
           <button type="button" class="btn" id="gOverview" hidden></button>
@@ -282,13 +290,14 @@ tr:last-child td{border-bottom:0}
           <div class="legend" id="legend"></div>
         </div>
       </div>
-      <div class="panel" id="p-dash"><div class="scroll" id="dash"></div></div>
-      <div class="panel" id="p-cypher"><div class="scroll" id="cylog"></div></div>
+      <div class="panel" id="p-dash" role="tabpanel" aria-labelledby="t-dash"><div class="scroll" id="dash"></div></div>
+      <div class="panel" id="p-cypher" role="tabpanel" aria-labelledby="t-cypher"><div class="scroll" id="cylog"></div></div>
     </section>
   </div>
 </main>
 
-<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js" id="visjs" defer></script>
+<!-- vis-network pinned to the version unpkg served on 2026-10-05; the hash was checked against the npm tarball -->
+<script src="https://unpkg.com/vis-network@10.1.2/standalone/umd/vis-network.min.js" integrity="sha384-RDdG1CLOxjNlTHh4JYx/rnAueaMHbkBHmeHwrEyljMQw3LF0it4SkuNotIY/FPxD" crossorigin="anonymous" id="visjs" defer></script>
 <script>
 (function () {
   'use strict';
@@ -305,10 +314,10 @@ tr:last-child td{border-bottom:0}
       hint: 'Ctrl + Enter 也可以提交',
       'try': '试试这些',
       planTitle: '你的一天',
-      planEmpty: '行程会出现在这里：每一站都由 Checker 对照 Neo4j 图谱核实过。',
-      planWorking: 'Crew 正在 Band 房间里排行程…',
+      planEmpty: '行程会出现在这里：每一站都由 Checker 回图谱核对过。',
+      planWorking: 'Crew 正在排行程…',
       stops: '{n} 站',
-      roomTitle: 'Band 房间',
+      roomTitle: 'Band 房间', roomTitleLocal: 'Crew 房间（本地）',
       transportBand: 'transport: Band room {id}',
       transportLocal: 'transport: local（Band 未配置）',
       transportUnknown: 'transport: 未知（状态接口不可用）',
@@ -316,45 +325,68 @@ tr:last-child td{border-bottom:0}
       thinkingMany: '{names} 正在思考…',
       tooling: '{names} 正在调用工具…',
       reconnecting: '实时连接断开，正在重连…',
+      connLost: '实时连接断开后已重连，这次规划的部分消息可能丢失了。',
+      timedOut: '5 分钟内没有结果，这次规划已停止，请重试。',
+      roomNotice: 'Band 房间：{msg}',
       roomEmpty: 'Crew 之间的每一次交接都是一条带 @提及 的 Band 消息，会实时显示在这里。',
+      roomEmptyLocal: 'Crew 之间的每一次交接都是一条带 @提及 的房间消息。Band 未配置，所以同样的消息在本地进程内的房间里传递，会实时显示在这里。',
       role_BAYBAY: '主持：和你对话、分派任务',
-      role_Scout: '侦察：把需求写成 Cypher，查 Neo4j',
+      role_Scout: '侦察：把需求变成筛选条件，查询图谱找候选（Neo4j 上的 Cypher，或本地图谱副本）',
       role_Planner: '规划：排出按时间顺序的行程',
-      role_Checker: '核查：逐站核对日期、免费与否、年龄限制',
+      role_Checker: '核查：逐站回图谱核对——活动和优惠：日期、年龄限制、免费（如有要求）；景点：是否在图谱里',
       tabGraph: '图谱', tabDash: '看板', tabCypher: 'Cypher 日志',
       overview: '回到总览', fit: '适配视图',
       showingOverview: '知识图谱总览 · {n} 个节点 · {e} 条关系',
-      showingRun: '本次规划用到的子图 · {n} 个节点 · {e} 条关系',
+      showingRun: 'Scout 的候选子图 · {n} 个节点 · {e} 条关系',
       graphLoading: '正在加载图谱…',
       graphFail: '图谱库加载失败（离线？）',
       graphEmpty: '暂无图谱数据',
       graphErr: '图谱总览加载失败',
       dashTitle: '图谱看板',
-      dashSub: '三条 Cypher 查询，直接跑在 Neo4j 上',
+      dashSub: '三条图谱上的 Cypher 查询',
+      dashSubNeo: '三条 Cypher 查询，直接跑在 Neo4j Aura 上',
+      dashSubLocal: '同样的三个问题，由本地图谱副本回答（Neo4j 未配置或暂不可用）',
       refresh: '刷新',
       dashFail: '看板加载失败：{msg}',
       loading: '加载中…',
       noRows: '没有结果',
-      cypherEmpty: 'Scout 每次查询 Neo4j 的 Cypher 都会记在这里，最新的在最上面。',
+      cypherEmpty: 'Crew 每次查询图谱（Scout、Planner、Checker）的 Cypher 都会记在这里，并标出由哪个引擎回答，最新的在最上面。',
       rows: '{n} 行',
-      free: '免费', verified: '✓ 已核实', unverified: '未核实', transit: '交通', notes: '小贴士',
+      eng_neo: 'Neo4j Aura', eng_cfg: '本地图谱（未配置 Neo4j）', eng_failed: '本地图谱（Neo4j 查询失败）', eng_down: '本地图谱（Neo4j 暂不可用）',
+      free: '免费', priceUnknown: '图谱里没有价格', priceTip: '你要求免费，但图谱里没有这个景点的价格，出发前请自己确认', whoTip: '适用人群', verified: '✓ 已核实', unverified: '未核实', transit: '交通', notes: '小贴士',
       approved: 'Checker 核查 {n} 轮后通过',
       approved1: 'Checker 第一轮就通过了',
       rejected: 'Checker 未通过（{n} 轮）',
       fixedAlong: '过程中发现并修正的问题：',
       openIssues: '仍未解决：',
-      statLLM: 'Crusoe 调用', statCypher: 'Neo4j 查询', statHandoffs: 'Band 交接', statTime: '用时',
+      reviewAsked: '复核提出的修改（之后的草稿有改动）：',
+      notApplied: '复核建议（未采纳）：',
+      statLLM: 'Crusoe 调用', statModel: '模型调用', statRules: '规则兜底', statCypher: 'Neo4j 查询', statCypherLocal: '图谱查询（本地）',
+      statHandoffs: 'Band 交接', statHandoffsLocal: '交接（本地房间）', statTime: '用时',
+      prov_fallback: '规则兜底（无 Crusoe 密钥）', prov_failed: 'Crusoe（失败 → 规则兜底）', prov_unparseable: 'Crusoe（无可用 JSON → 规则兜底）',
+      errNeo: 'Neo4j 查询失败：{detail}——改用本地图谱副本回答。',
+      errNeoMin: 'Neo4j 查询失败：{detail}——接下来一分钟改用本地图谱副本回答。',
+      errCrusoe: 'Crusoe 调用失败（{detail}），这一步改用规则兜底。',
+      errCrusoeJson: 'Crusoe 回答了，但没有可用的 JSON，这一步改用规则兜底。',
       doneIn: '完成 · 用时 {s}',
       askFail: '无法连接服务器：{msg}',
+      busy: '服务器正在处理其他几个请求，请过一分钟再试。',
       runError: '出错了：{msg}',
+      dateAfter: '图谱里 {last} 之后没有活动（目录快照：{snap}），这一天的行程只会用优惠和景点。',
       you: '你', youShort: '我',
       kind_thought: '思考', kind_tool_call: '工具调用', kind_tool_result: '工具结果', kind_task: '任务', kind_error: '错误',
-      pillChecking: '检查中…',
-      crusoe: 'Crusoe · {model}', crusoeOff: 'Crusoe · 未连接',
-      neo4j: 'Neo4j · {n} 节点 / {r} 关系', neo4jOff: 'Neo4j · 未连接',
-      band: 'Band · room {id}', bandLocal: 'Band · 本地模式', bandOff: 'Band · 未连接',
-      k_Event: '活动', k_Venue: '场馆', k_Neighborhood: '街区', k_Station: '车站', k_Line: '线路',
-      k_Offer: '优惠', k_Opening: '新开业', k_Category: '类别', k_Guide: '指南', k_Other: '其他'
+      nChars: '{n} 字',
+      pillChecking: '检查中…', statusNA: '状态不可用',
+      crusoe: 'Crusoe · {model}', crusoeOff: 'Crusoe · 未配置（规则兜底）', crusoeErr: 'Crusoe · {msg}',
+      errModelList: '模型列表获取失败', errModelPending: '正在获取模型列表', errNotServed: '未提供：{ids}',
+      neo4j: 'Neo4j · {n} 节点 / {r} 关系', neo4jLocal: 'Neo4j · 未配置（本地图谱）', neo4jDown: 'Neo4j · 连不上（改用本地图谱）',
+      neo4jLocalTip: '本地图谱副本（data/graph.json）：{n} 个节点 / {r} 条关系',
+      neo4jPartial: 'Aura 里有 {n} 个节点，本地图谱有 {m} 个：请先运行 npm run load',
+      band: 'Band · room {id}', bandLocal: 'Band · 本地模式', bandOff: 'Band · 未连接', bandFailing: '{names} 连不上',
+      k_Event: '活动', k_Venue: '场馆', k_Neighborhood: '街区', k_Station: '车站', k_Line: '线路', k_Place: '地点',
+      k_Offer: '优惠', k_Opening: '新开业', k_Category: '类别', k_Guide: '指南', k_Other: '其他',
+      col_neighborhood: '街区', col_freeEvents: '免费活动', col_examples: '例子', col_station: '车站', col_nearby: '附近景点',
+      col_lines: '线路', col_line: '线路', col_events: '活动'
     },
     en: {
       subtitle: 'Real San Francisco days, planned by a crew of agents',
@@ -366,10 +398,10 @@ tr:last-child td{border-bottom:0}
       hint: 'Ctrl + Enter submits too',
       'try': 'Try one',
       planTitle: 'Your day',
-      planEmpty: 'Your itinerary lands here. Checker verifies every stop against the Neo4j graph.',
-      planWorking: 'The crew is planning your day in the Band room…',
+      planEmpty: 'Your itinerary lands here. Checker re-checks every stop against the graph.',
+      planWorking: 'The crew is planning your day…',
       stops: '{n} stops',
-      roomTitle: 'Band room',
+      roomTitle: 'Band room', roomTitleLocal: 'Crew room (local)',
       transportBand: 'transport: Band room {id}',
       transportLocal: 'transport: local (Band not configured)',
       transportUnknown: 'transport: unknown (status unavailable)',
@@ -377,45 +409,68 @@ tr:last-child td{border-bottom:0}
       thinkingMany: '{names} are thinking…',
       tooling: '{names} is using a tool…',
       reconnecting: 'Live stream lost, reconnecting…',
+      connLost: 'The live stream dropped and reconnected; some messages of this run may be missing.',
+      timedOut: 'No result after 5 minutes, so this run was stopped. Please try again.',
+      roomNotice: 'Band room: {msg}',
       roomEmpty: 'Every handoff between the crew is a Band message with @mentions. It all shows up here, live.',
+      roomEmptyLocal: 'Every handoff between the crew is a room message with @mentions. Band is not configured, so the same messages run in a local, in-process room. It all shows up here, live.',
       role_BAYBAY: 'Host: talks to you, routes the request',
-      role_Scout: 'Writes Cypher, queries Neo4j for candidates',
+      role_Scout: 'Turns the request into filters and queries the graph for candidates (Cypher on Neo4j, or the local copy)',
       role_Planner: 'Builds a time-ordered itinerary',
-      role_Checker: 'Verifies date, free/paid, age limits per stop',
+      role_Checker: 'Re-reads every stop in the graph. Events and offers: date, age limits, free (when asked); places: that they are in the graph',
       tabGraph: 'Graph', tabDash: 'Dashboard', tabCypher: 'Cypher log',
       overview: 'Back to overview', fit: 'Fit',
       showingOverview: 'Knowledge graph overview · {n} nodes · {e} edges',
-      showingRun: "This plan's subgraph · {n} nodes · {e} edges",
+      showingRun: "Scout's candidates · {n} nodes · {e} edges",
       graphLoading: 'Loading graph…',
       graphFail: 'Graph library failed to load (offline?)',
       graphEmpty: 'No graph data yet',
       graphErr: 'Could not load the graph overview',
       dashTitle: 'Graph dashboard',
-      dashSub: 'Three Cypher queries, run live on Neo4j',
+      dashSub: 'Three Cypher queries over the graph',
+      dashSubNeo: 'Three Cypher queries, run live on Neo4j Aura',
+      dashSubLocal: 'The same three questions, answered from the local copy of the graph (Neo4j not configured or unavailable)',
       refresh: 'Refresh',
       dashFail: 'Could not load the dashboard: {msg}',
       loading: 'Loading…',
       noRows: 'No rows',
-      cypherEmpty: 'Every Cypher query Scout runs against Neo4j is logged here, newest first.',
+      cypherEmpty: 'Every graph query the crew runs (Scout, Planner, Checker) is logged here with the engine that answered it, newest first.',
       rows: '{n} rows',
-      free: 'FREE', verified: '✓ verified', unverified: 'not verified', transit: 'Transit', notes: 'Notes',
+      eng_neo: 'Neo4j Aura', eng_cfg: 'local graph (Neo4j not configured)', eng_failed: 'local graph (Neo4j query failed)', eng_down: 'local graph (Neo4j unavailable)',
+      free: 'FREE', priceUnknown: 'price not in the graph', priceTip: 'You asked for free stops, but the graph has no price for this place: check before you go', whoTip: 'Who it is for', verified: '✓ verified', unverified: 'not verified', transit: 'Transit', notes: 'Notes',
       approved: 'Checker approved after {n} rounds',
       approved1: 'Checker approved on the first round',
       rejected: 'Checker did not approve ({n} rounds)',
       fixedAlong: 'Caught and fixed along the way:',
       openIssues: 'Still open:',
-      statLLM: 'Crusoe calls', statCypher: 'Neo4j queries', statHandoffs: 'Band handoffs', statTime: 'Elapsed',
+      reviewAsked: 'The review asked for (the next draft changed):',
+      notApplied: 'Suggested by the review, not applied:',
+      statLLM: 'Crusoe calls', statModel: 'model calls', statRules: 'rule-based steps', statCypher: 'Neo4j queries', statCypherLocal: 'graph queries (local)',
+      statHandoffs: 'Band handoffs', statHandoffsLocal: 'handoffs (local room)', statTime: 'Elapsed',
+      prov_fallback: 'fallback (no Crusoe key)', prov_failed: 'Crusoe (failed → fallback)', prov_unparseable: 'Crusoe (unparseable → fallback)',
+      errNeo: 'Neo4j query failed: {detail} — answering from the local copy of the graph.',
+      errNeoMin: 'Neo4j query failed: {detail} — answering from the local copy of the graph for the next minute.',
+      errCrusoe: 'Crusoe call failed ({detail}); using the rule-based fallback for this step.',
+      errCrusoeJson: 'Crusoe answered without usable JSON; using the rule-based fallback for this step.',
       doneIn: 'Done in {s}',
       askFail: 'Could not reach the server: {msg}',
+      busy: 'The server is busy with other requests; please try again in a minute.',
       runError: 'Error: {msg}',
+      dateAfter: 'No events in the graph after {last} (catalog snapshot of {snap}): the plan for this date uses offers and places only.',
       you: 'You', youShort: 'U',
       kind_thought: 'thought', kind_tool_call: 'tool call', kind_tool_result: 'tool result', kind_task: 'task', kind_error: 'error',
-      pillChecking: 'checking…',
-      crusoe: 'Crusoe · {model}', crusoeOff: 'Crusoe · offline',
-      neo4j: 'Neo4j · {n} nodes / {r} rels', neo4jOff: 'Neo4j · offline',
-      band: 'Band · room {id}', bandLocal: 'Band · local', bandOff: 'Band · offline',
-      k_Event: 'Event', k_Venue: 'Venue', k_Neighborhood: 'Neighborhood', k_Station: 'Station', k_Line: 'Line',
-      k_Offer: 'Offer', k_Opening: 'Opening', k_Category: 'Category', k_Guide: 'Guide', k_Other: 'Other'
+      nChars: '{n} chars',
+      pillChecking: 'checking…', statusNA: 'status unavailable',
+      crusoe: 'Crusoe · {model}', crusoeOff: 'Crusoe · not configured (rule-based fallback)', crusoeErr: 'Crusoe · {msg}',
+      errModelList: 'model list failed', errModelPending: 'model list pending', errNotServed: 'not served: {ids}',
+      neo4j: 'Neo4j · {n} nodes / {r} rels', neo4jLocal: 'Neo4j · not configured (local graph)', neo4jDown: 'Neo4j · unreachable (local graph)',
+      neo4jLocalTip: 'Local copy of the graph (data/graph.json): {n} nodes / {r} rels',
+      neo4jPartial: 'Aura has {n} nodes, the local graph has {m}: run npm run load',
+      band: 'Band · room {id}', bandLocal: 'Band · local', bandOff: 'Band · offline', bandFailing: '{names} failing',
+      k_Event: 'Event', k_Venue: 'Venue', k_Neighborhood: 'Neighborhood', k_Station: 'Station', k_Line: 'Line', k_Place: 'Place',
+      k_Offer: 'Offer', k_Opening: 'Opening', k_Category: 'Category', k_Guide: 'Guide', k_Other: 'Other',
+      col_neighborhood: 'Neighborhood', col_freeEvents: 'Free events', col_examples: 'Examples', col_station: 'Station', col_nearby: 'Nearby',
+      col_lines: 'Lines', col_line: 'Line', col_events: 'Events'
     }
   };
 
@@ -436,6 +491,7 @@ tr:last-child td{border-bottom:0}
     Neighborhood: { shape: 'dot', size: 34, color: { background: 'rgba(240,200,120,0.42)', border: '#dfb35c' }, font: { size: 16, color: '#6f5114', strokeWidth: 4, strokeColor: '#fffaf0' }, borderWidth: 2 },
     Station:      { shape: 'diamond', size: 8, color: { background: '#2f3e56', border: '#1b2536' }, font: { size: 10 } },
     Line:         { shape: 'triangle', size: 10, color: { background: '#8d99ae', border: '#5c677d' }, font: { size: 10 } },
+    Place:        { shape: 'dot', size: 10, color: { background: '#4fb3a9', border: '#2e8a80' } },
     Offer:        { shape: 'star', size: 13, color: { background: '#f2c230', border: '#c49308' } },
     Opening:      { shape: 'square', size: 10, color: { background: '#d6457a', border: '#a52f5b' } },
     Category:     { shape: 'hexagon', size: 10, color: { background: '#8cc084', border: '#5a9a50' } },
@@ -467,7 +523,8 @@ tr:last-child td{border-bottom:0}
     if (Array.isArray(c)) { c.forEach(function (x) { appendKid(el, x); }); return; }
     el.appendChild(c instanceof Node ? c : document.createTextNode(String(c)));
   }
-  var lang = 'zh';
+  // saved choice, else the browser's language (zh* → 中文), else English
+  var lang = /^zh/i.test(navigator.language || '') ? 'zh' : 'en';
   try { var sl = localStorage.getItem('baybay.lang'); if (sl === 'en' || sl === 'zh') lang = sl; } catch (e) {}
   function t(key, vars) {
     var s = (I18N[lang] && I18N[lang][key]);
@@ -476,6 +533,16 @@ tr:last-child td{border-bottom:0}
     if (vars) s = s.replace(/\{(\w+)\}/g, function (m, k) { return vars[k] != null ? String(vars[k]) : m; });
     return s;
   }
+  // a text node that re-translates on the 中文/EN toggle (applyLang re-reads data-i18n + data-i18n-vars)
+  function tr(key, vars, cls) {
+    return h('span', { 'class': cls || null, 'data-i18n': key, 'data-i18n-vars': vars ? JSON.stringify(vars) : null, text: t(key, vars) });
+  }
+  function i18nVars(el) { try { return JSON.parse(el.getAttribute('data-i18n-vars') || 'null'); } catch (e) { return null; } }
+  // this tab's id: the server sends a run's events only to the stream of the client that asked
+  var clientId = (function () {
+    try { if (window.crypto && typeof crypto.randomUUID === 'function') return crypto.randomUUID(); } catch (e) {}
+    return 'c-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+  })();
   function canon(n) {
     var s = String(n == null ? '' : n).trim().replace(/^@/, '');
     if (/^(user|you|human|用户)$/i.test(s)) return 'User';
@@ -511,7 +578,8 @@ tr:last-child td{border-bottom:0}
 
   /* ---------- state ---------- */
   var status = null, statusState = 'checking';
-  function newRun() { return { id: null, active: false, started: false, userText: '', t0: 0, endAt: 0, ms: null, llm: 0, llmMs: 0, cypher: 0, handoffs: 0, plan: null }; }
+  // llm = real Crusoe calls only; rules = rule-based steps; cyNeo = queries Neo4j answered; bandHandoffs = handoffs that went through Band
+  function newRun() { return { id: null, active: false, started: false, userText: '', t0: 0, endAt: 0, ms: null, llm: 0, llmMs: 0, rules: 0, cypher: 0, cyNeo: 0, handoffs: 0, bandHandoffs: 0, plan: null }; }
   var R = newRun();
   var awaiting = false, buffer = [];
   var pending = new Map();      // agent -> 'think' | 'tool'
@@ -519,7 +587,7 @@ tr:last-child td{border-bottom:0}
   var queued = {};              // agent -> [badge els]
   var cypherLog = [], unseenCypher = 0;
   var dash = null, dashState = 'idle', dashErr = '';
-  var network = null, visState = 'loading', graphData = null, graphMode = 'overview', overviewData = null, overviewState = 'loading';
+  var network = null, visState = 'loading', graphData = null, graphMode = 'overview', overviewData = null, overviewState = 'loading', tips = [];
   var activeTab = 'graph', lastManualTab = 0;
   var tickTimer = null, safetyTimer = null;
 
@@ -529,12 +597,17 @@ tr:last-child td{border-bottom:0}
   /* ---------- language ---------- */
   function applyLang() {
     document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-    $$('[data-i18n]').forEach(function (el) { el.textContent = t(el.getAttribute('data-i18n')); });
+    $$('[data-i18n]').forEach(function (el) { el.textContent = t(el.getAttribute('data-i18n'), i18nVars(el)); });
     qEl.placeholder = t('placeholder');
-    $$('.langsw button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-lang') === lang); });
+    $$('.langsw button').forEach(function (b) {
+      var on = b.getAttribute('data-lang') === lang;
+      b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    $('#tabs').setAttribute('aria-label', t('tabGraph') + ' / ' + t('tabDash') + ' / ' + t('tabCypher'));
     $('#gOverview').textContent = t('overview');
     $('#gFit').textContent = t('fit');
-    renderGo(); renderPills(); renderTransport(); renderAgents(); renderChips(); renderPlan();
+    tips.forEach(function (x) { x.el.textContent = tipKind(x.n, x.full); });
+    renderGo(); renderPills(); renderTransport(); renderAgents(); renderChips(); renderPlan(); renderDateNote();
     renderThinking(); renderStats(); renderGraphInfo(); renderLegend(); renderDash(); renderCypherLog(); renderConn();
     if (!trace.firstChild || trace.querySelector('.empty')) renderRoomEmpty();
   }
@@ -552,37 +625,63 @@ tr:last-child td{border-bottom:0}
     el.replaceChildren(h('span', { 'class': 'txt', text: text }), h('span', { 'class': 'dot ' + (cls || '') }));
     el.title = title || text;
   }
+  function crusoeErr(e) {
+    e = String(e || ''); var m = /^not served:\s*(.*)$/i.exec(e);
+    return /^model list failed/i.test(e) ? t('errModelList') : /^model list pending/i.test(e) ? t('errModelPending') : m ? t('errNotServed', { ids: m[1] }) : e;
+  }
   function renderPills() {
-    if (!status && statusState === 'checking') {
-      setPill('pCrusoe', 'Crusoe · ' + t('pillChecking'), '');
-      setPill('pNeo', 'Neo4j · ' + t('pillChecking'), '');
-      setPill('pBand', 'Band · ' + t('pillChecking'), '');
+    if (!status) {
+      var k = statusState === 'checking' ? 'pillChecking' : 'statusNA', cl = statusState === 'checking' ? '' : 'bad';
+      setPill('pCrusoe', 'Crusoe · ' + t(k), cl);
+      setPill('pNeo', 'Neo4j · ' + t(k), cl);
+      setPill('pBand', 'Band · ' + t(k), cl);
       return;
     }
-    var c = status && status.crusoe, n = status && status.neo4j, b = status && status.band;
-    setPill('pCrusoe', c && c.model ? t('crusoe', { model: c.model }) : t('crusoeOff'), c && c.ok ? 'ok' : 'bad',
-      c ? ['Crusoe Managed Inference', c.model, c.baseUrl].filter(Boolean).join('\n') : '');
+    var c = status.crusoe, n = status.neo4j, b = status.band;
+    // Crusoe: green only when the server saw every agent's model in Crusoe's list; not configured = rule-based fallback
+    if (!c) setPill('pCrusoe', 'Crusoe · ' + t('statusNA'), 'bad');
+    else {
+      var off = !c.ok && /^not configured/i.test(String(c.model || ''));
+      var per = c.perAgent && typeof c.perAgent === 'object' ? Object.keys(c.perAgent).map(function (a) { return a + ': ' + c.perAgent[a]; }).join('\n') : '';
+      var listing = /^model list pending/i.test(String(c.error || ''));
+      setPill('pCrusoe', c.ok ? t('crusoe', { model: c.model }) : off ? t('crusoeOff') : c.error ? t('crusoeErr', { msg: crusoeErr(c.error) }) : t('crusoe', { model: c.model || '?' }),
+        c.ok ? 'ok' : off ? 'warn' : listing ? '' : 'bad', ['Crusoe Managed Inference', off ? t('crusoeOff') : per, c.error ? crusoeErr(c.error) : ''].filter(Boolean).join('\n'));
+    }
+    // Neo4j: green only when Aura answers and holds this graph; otherwise the local copy answers (data/graph.json)
     var labels = n && n.labels && typeof n.labels === 'object' ? Object.keys(n.labels).map(function (k) { return k + ': ' + fmtNum(n.labels[k]); }).join('\n') : '';
-    setPill('pNeo', n && n.ok ? t('neo4j', { n: fmtNum(n.nodes), r: fmtNum(n.rels) }) : t('neo4jOff'), n && n.ok ? 'ok' : 'bad', labels);
-    var bt, bc;
-    if (b && b.mode === 'band' && b.room) { bt = t('band', { id: shortId(b.room) }); bc = 'ok'; }
-    else if (b && b.mode === 'local') { bt = t('bandLocal'); bc = 'warn'; }
-    else { bt = t('bandOff'); bc = 'bad'; }
-    setPill('pBand', bt, bc, b && b.room ? 'Band room ' + b.room : bt);
+    var localNodes = n && n.labels && typeof n.labels === 'object' ? Object.keys(n.labels).reduce(function (s, k) { return s + (Number(neoInt(n.labels[k])) || 0); }, 0) : null;
+    if (!n) setPill('pNeo', 'Neo4j · ' + t('statusNA'), 'bad');
+    else if (n.ok) setPill('pNeo', t('neo4j', { n: fmtNum(n.nodes), r: fmtNum(n.rels) }), 'ok', labels);
+    else if (n.mode !== 'neo4j') setPill('pNeo', t('neo4jLocal'), 'warn', [t('neo4jLocalTip', { n: fmtNum(n.nodes), r: fmtNum(n.rels) }), labels].filter(Boolean).join('\n'));
+    else if (n.error && !/^the graph has \d+ of \d+ nodes/i.test(String(n.error))) setPill('pNeo', t('neo4jDown'), 'bad', String(n.error));
+    else setPill('pNeo', t('neo4j', { n: fmtNum(n.nodes), r: fmtNum(n.rels) }), 'warn', t('neo4jPartial', { n: fmtNum(n.nodes), m: fmtNum(localNodes) })); // Aura answers but holds another graph
+    // Band: green only while every agent's polling works
+    if (!b) setPill('pBand', 'Band · ' + t('statusNA'), 'bad');
+    else if (b.mode === 'band' && b.room) {
+      var ag = Array.isArray(b.agents) ? b.agents : [];
+      var bad = ag.filter(function (a) { return a && a.ok === false; }).map(function (a) { return canon(a.name); });
+      setPill('pBand', t('band', { id: shortId(b.room) }), bad.length || b.ok === false ? (bad.length && bad.length === ag.length ? 'bad' : 'warn') : 'ok',
+        ['Band room ' + shortId(b.room), bad.length ? t('bandFailing', { names: bad.join(', ') }) : ''].filter(Boolean).join('\n'));
+    }
+    else if (b.mode === 'local') setPill('pBand', t('bandLocal'), 'warn', t('transportLocal'));
+    else setPill('pBand', t('bandOff'), 'bad');
   }
   function renderTransport() {
-    var el = $('#transport'), b = status && status.band;
+    var el = $('#transport'), b = status && status.band, local = !!(b && b.mode === 'local');
     el.replaceChildren();
-    if (b && b.mode === 'band' && b.room) el.append('transport: Band room ', h('b', { text: String(b.room) }));
-    else if (b && b.mode === 'local') el.textContent = t('transportLocal');
+    if (b && b.mode === 'band' && b.room) el.append('transport: Band room ', h('b', { text: shortId(b.room) }));
+    else if (local) el.textContent = t('transportLocal');
     else el.textContent = statusState === 'checking' ? 'transport: …' : t('transportUnknown');
+    var rt = $('#roomTitle'), key = local ? 'roomTitleLocal' : 'roomTitle';
+    rt.setAttribute('data-i18n', key); rt.textContent = t(key);
+    if (trace.querySelector('.empty')) renderRoomEmpty();
   }
   function renderAgents() {
     var list = (status && status.band && Array.isArray(status.band.agents) && status.band.agents.length)
       ? status.band.agents : AGENTS.map(function (a) { return { name: a, ok: null }; });
     $('#agents').replaceChildren.apply($('#agents'), list.map(function (a) {
       var name = canon(a.name);
-      return h('span', { 'class': 'agent', style: '--c:' + colorOf(name), title: (a.role ? a.role + ' · ' : '') + t('role_' + name) },
+      return h('span', { 'class': 'agent', style: '--c:' + colorOf(name), title: t('role_' + name) },
         h('span', { 'class': 'av', style: '--c:' + colorOf(name), text: name.charAt(0) }),
         h('b', { text: name }),
         h('span', { 'class': 'dot ' + (a.ok === true ? 'ok' : a.ok === false ? 'bad' : '') }));
@@ -593,8 +692,19 @@ tr:last-child td{border-bottom:0}
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (j) { status = j; statusState = 'ok'; })
       .catch(function () { status = null; statusState = 'fail'; })
-      .then(function () { renderPills(); renderTransport(); renderAgents(); });
+      .then(onStatus);
   }
+  function onStatus() { renderPills(); renderTransport(); renderAgents(); renderDateNote(); renderStats(); }
+
+  /* ---------- the graph's date range (catalog snapshot) ---------- */
+  function renderDateNote() {
+    var el = $('#dateNote'), d = status && status.data, v = dateEl.value || nextSat();
+    var after = !!(d && d.lastEvent && v > String(d.lastEvent));
+    el.hidden = !after;
+    el.textContent = after ? t('dateAfter', { last: fmtDate(d.lastEvent), snap: d.snapshot ? fmtDate(d.snapshot) : '—' }) : '';
+  }
+  dateEl.addEventListener('input', renderDateNote);
+  dateEl.addEventListener('change', renderDateNote);
 
   /* ---------- ask box ---------- */
   function renderGo() { goBtn.textContent = R.active ? t('going') : t('go'); goBtn.disabled = R.active; }
@@ -604,7 +714,7 @@ tr:last-child td{border-bottom:0}
         type: 'button', 'class': 'chip', text: ex[lang],
         onclick: function () {
           qEl.value = ex[lang];
-          if (ex.halloween) dateEl.value = halloweenDate();
+          if (ex.halloween) { dateEl.value = halloweenDate(); renderDateNote(); }
           qEl.focus();
         }
       });
@@ -623,15 +733,15 @@ tr:last-child td{border-bottom:0}
     pending.set('BAYBAY', 'think');
     renderGo(); renderThinking(); renderPlan(); renderStats();
     tickTimer = setInterval(renderStats, 200);
-    safetyTimer = setTimeout(function () { if (R.active) finishRun(null); }, 300000);
+    safetyTimer = setTimeout(function () { if (R.active) { addSys(tr('timedOut'), 'err'); finishRun(null); } }, 300000);
     fetch('/api/ask', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: text, lang: lang, date: dateEl.value || nextSat() })
+      body: JSON.stringify({ text: text, lang: lang, date: dateEl.value || nextSat(), client: clientId })
     }).then(function (r) {
       return r.text().then(function (body) {
         var j = null; try { j = JSON.parse(body); } catch (e) {}
-        if (!r.ok) throw new Error('HTTP ' + r.status + (j && (j.error || j.message) ? ' · ' + (j.error || j.message) : ''));
+        if (!r.ok) throw Object.assign(new Error('HTTP ' + r.status + (j && (j.error || j.message) ? ' · ' + (j.error || j.message) : '')), { status: r.status });
         if (!j || j.runId == null) throw new Error('no runId');
         return j;
       });
@@ -641,7 +751,7 @@ tr:last-child td{border-bottom:0}
       b.forEach(function (ev) { if (String(ev.runId) === R.id) dispatch(ev); });
     }).catch(function (e) {
       awaiting = false; buffer = [];
-      addSys(t('askFail', { msg: e && e.message ? e.message : String(e) }), 'err');
+      addSys(e && e.status === 429 ? tr('busy') : tr('askFail', { msg: e && e.message ? e.message : String(e) }), 'err');
       finishRun(null);
     });
   }
@@ -674,8 +784,9 @@ tr:last-child td{border-bottom:0}
     if (trace.scrollHeight - trace.scrollTop - trace.clientHeight < 220) trace.scrollTop = trace.scrollHeight;
   }
   function renderRoomEmpty() {
+    var local = !!(status && status.band && status.band.mode === 'local');
     trace.replaceChildren(h('div', { 'class': 'empty' },
-      h('p', { text: t('roomEmpty') }),
+      h('p', { text: t(local ? 'roomEmptyLocal' : 'roomEmpty') }),
       h('ul', { 'class': 'crew' }, AGENTS.map(function (a) {
         return h('li', { style: '--c:' + colorOf(a) },
           h('span', { 'class': 'av', style: '--c:' + colorOf(a), text: a.charAt(0) }),
@@ -696,8 +807,8 @@ tr:last-child td{border-bottom:0}
   function renderBody(text, minor, kind) {
     var code = looksCode(text), content;
     if (code) {
-      var s = text, tr = text.trim();
-      if (tr.charAt(0) === '{' || tr.charAt(0) === '[') { try { s = JSON.stringify(JSON.parse(tr), null, 2); } catch (e) {} }
+      var s = text, trimmed = text.trim();
+      if (trimmed.charAt(0) === '{' || trimmed.charAt(0) === '[') { try { s = JSON.stringify(JSON.parse(trimmed), null, 2); } catch (e) {} }
       content = h('pre', { 'class': 'code', text: s });
     } else {
       content = h('div', { 'class': 'txt' }, mentionify(text));
@@ -705,42 +816,52 @@ tr:last-child td{border-bottom:0}
     var long = text.length > 260 || text.split('\n').length > 6;
     if (minor && long) {
       var first = text.trim().split('\n')[0];
-      var sum = first.length > 2 ? trunc(first, 90) : (t('kind_' + kind) + ' · ' + text.length + ' chars');
-      return h('details', { 'class': 'fold' }, h('summary', { text: sum }), content);
+      var sum = first.length > 2 ? trunc(first, 90) : [tr('kind_' + kind), ' · ', tr('nChars', { n: text.length })];
+      return h('details', { 'class': 'fold' }, h('summary', null, sum), content);
     }
     return content;
+  }
+  // the server's two failure notices, shown in the visitor's language (anything else stays as sent)
+  function errBody(text) {
+    var m = /^Neo4j query failed:\s*([\s\S]*?)\s*—\s*answering from the local copy of the graph( for the next minute)?\.?$/.exec(text);
+    if (m) return h('div', { 'class': 'txt' }, tr(m[2] ? 'errNeoMin' : 'errNeo', { detail: m[1] }));
+    m = /^(?:Crusoe call failed\s*\(([\s\S]*?)\);?\s*using the rule-based fallback for this step|Crusoe 调用失败（([\s\S]*?)），这一步改用规则兜底)[.。]?$/.exec(text);
+    if (m) return h('div', { 'class': 'txt' }, tr('errCrusoe', { detail: String(m[1] != null ? m[1] : m[2]).trim() }));
+    if (/^(Crusoe answered without usable JSON|Crusoe 回答了，但没有可用的 JSON)/.test(text)) return h('div', { 'class': 'txt' }, tr('errCrusoeJson'));
+    return null;
   }
   function addUserBubble(text) {
     var bubble = h('div', { 'class': 'msg me', style: '--c:' + COLORS.User },
       h('div', { 'class': 'mh' },
-        h('span', { 'class': 'av', style: '--c:' + COLORS.User, text: t('youShort') }),
-        h('span', { 'class': 'who', text: t('you') }),
+        h('span', { 'class': 'av', style: '--c:' + COLORS.User, 'data-i18n': 'youShort', text: t('youShort') }),
+        h('span', { 'class': 'who', 'data-i18n': 'you', text: t('you') }),
         h('span', { 'class': 'arrow', text: '→' }),
         h('span', { 'class': 'at', style: '--c:' + COLORS.BAYBAY, text: '@BAYBAY' }),
         h('span', { 'class': 'tm', text: fmtTime() })),
       h('div', { 'class': 'txt', text: text }));
     appendTrace(bubble);
   }
-  function addSys(text, cls) { appendTrace(h('div', { 'class': 'sys ' + (cls || ''), text: text })); }
+  function addSys(content, cls) { appendTrace(h('div', { 'class': 'sys ' + (cls || '') }, content)); }
 
   function addRoom(ev) {
     var from = canon(ev.from || '?');
     var kind = ev.kind || 'message';
     var text = ev.text == null ? '' : (typeof ev.text === 'string' ? ev.text : JSON.stringify(ev.text, null, 2));
-    if (from === 'User' && R.userText && text.trim() === R.userText.trim()) return; // our own local echo
+    if (from === 'User' && R.userText && text.trim() === R.userText.slice(0, 500).trim()) return; // our own local echo (the server keeps 500 chars)
     var toRaw = Array.isArray(ev.to) ? ev.to : (ev.to ? [ev.to] : []);
     var to = toRaw.map(canon);
     var minor = kind === 'thought' || kind === 'tool_call' || kind === 'tool_result';
     var c = colorOf(from);
     var head = h('div', { 'class': 'mh' },
-      h('span', { 'class': 'av', style: '--c:' + c, text: from === 'User' ? t('youShort') : from.charAt(0) }),
-      h('span', { 'class': 'who', text: from === 'User' ? t('you') : from }),
+      from === 'User' ? h('span', { 'class': 'av', style: '--c:' + c, 'data-i18n': 'youShort', text: t('youShort') }) : h('span', { 'class': 'av', style: '--c:' + c, text: from.charAt(0) }),
+      from === 'User' ? h('span', { 'class': 'who', 'data-i18n': 'you', text: t('you') }) : h('span', { 'class': 'who', text: from }),
       to.length ? h('span', { 'class': 'arrow', text: '→' }) : null,
-      to.map(function (n) { return h('span', { 'class': 'at', style: '--c:' + colorOf(n), text: '@' + (n === 'User' ? t('you') : n) }); }),
-      kind !== 'message' ? h('span', { 'class': 'kind', text: t('kind_' + kind) }) : null,
+      to.map(function (n) { return h('span', { 'class': 'at', style: '--c:' + colorOf(n) }, '@', n === 'User' ? tr('you') : n); }),
+      kind !== 'message' ? tr('kind_' + kind, null, 'kind') : null,
       h('span', { 'class': 'tm', text: fmtTime(ev.at) }));
+    var body = (kind === 'error' && errBody(text)) || renderBody(text, minor, kind);
     var bubble = h('div', { 'class': 'msg' + (from === 'User' ? ' me' : '') + (minor ? ' minor' : '') + ' k-' + kind, style: '--c:' + c },
-      head, renderBody(text, minor, kind), h('div', { 'class': 'badges' }));
+      head, body, h('div', { 'class': 'badges' }));
     appendTrace(bubble);
     lastBubble[from] = bubble;
     if (queued[from] && queued[from].length) {
@@ -753,16 +874,19 @@ tr:last-child td{border-bottom:0}
     else pending.delete(from);
     if (!minor) {
       to.forEach(function (n) { if (isAgent(n) && n !== from) { pending.delete(n); pending.set(n, 'think'); } });
-      if (to.length && isAgent(from)) R.handoffs++;
+      if (to.length && isAgent(from)) { R.handoffs++; if (ev.band) R.bandHandoffs++; }
     }
     renderThinking(); renderStats();
   }
 
   function onLLM(ev) {
     var agent = canon(ev.agent || '?');
-    R.llm++; R.llmMs += Number(ev.ms) || 0;
-    var label = (ev.provider || 'Crusoe') + ' · ' + (ev.model || '?') + ' · ' + sec(ev.ms) + (ev.tokens != null ? ' · ' + fmtNum(ev.tokens) + ' tok' : '');
-    var badge = h('span', { 'class': 'llm', title: label }, '⚡ ' + label);
+    var prov = String(ev.provider || '?'), crusoe = prov === 'Crusoe';
+    // only a real Crusoe answer counts as a Crusoe call; the rule-based fallback (no key, or a failed call) is counted apart
+    if (crusoe) { R.llm++; R.llmMs += Number(ev.ms) || 0; } else R.rules++;
+    var pk = /^fallback/i.test(prov) ? 'prov_fallback' : /^Crusoe \(failed/i.test(prov) ? 'prov_failed' : /^Crusoe \(unparseable/i.test(prov) ? 'prov_unparseable' : null;
+    var rest = ' · ' + (ev.model || '?') + ' · ' + sec(ev.ms) + (ev.tokens != null ? ' · ' + fmtNum(ev.tokens) + ' tok' : '');
+    var badge = h('span', { 'class': 'llm', title: prov + rest }, crusoe ? '⚡ ' : '⚙ ', pk ? tr(pk) : prov, rest);
     if (pending.has(agent) || !lastBubble[agent]) (queued[agent] = queued[agent] || []).push(badge);
     else { lastBubble[agent].querySelector('.badges').appendChild(badge); scrollIfNear(); }
     renderStats();
@@ -795,11 +919,18 @@ tr:last-child td{border-bottom:0}
     if (!R.started) { el.hidden = true; return; }
     el.hidden = false;
     var elapsed = R.ms != null ? R.ms : ((R.active ? performance.now() : R.endAt) - R.t0);
-    el.replaceChildren(
-      stat('⚡ ' + t('statLLM'), R.llm + (R.llm ? ' · ' + sec(R.llmMs) : '')),
-      stat(t('statCypher'), R.cypher),
-      stat(t('statHandoffs'), R.handoffs),
-      stat(t('statTime'), sec(elapsed)));
+    var c = status && status.crusoe, n = status && status.neo4j, b = status && status.band;
+    // each label names the service only when it really answered (offline: model calls / local graph / local room)
+    var parts = [stat(R.llm || (c && c.ok) ? '⚡ ' + t('statLLM') : t('statModel'), R.llm + (R.llm ? ' · ' + sec(R.llmMs) : ''))];
+    if (R.rules) parts.push(stat(t('statRules'), R.rules));
+    if (!R.cypher) parts.push(stat(n && n.ok && n.mode === 'neo4j' ? t('statCypher') : t('statCypherLocal'), 0));
+    else {
+      if (R.cyNeo) parts.push(stat(t('statCypher'), R.cyNeo));
+      if (R.cypher > R.cyNeo) parts.push(stat(t('statCypherLocal'), R.cypher - R.cyNeo));
+    }
+    var viaBand = R.handoffs ? R.bandHandoffs === R.handoffs : !!(b && b.mode === 'band');
+    parts.push(stat(viaBand ? t('statHandoffs') : t('statHandoffsLocal'), R.handoffs), stat(t('statTime'), sec(elapsed)));
+    el.replaceChildren.apply(el, parts);
   }
 
   /* ---------- plan card ---------- */
@@ -813,6 +944,7 @@ tr:last-child td{border-bottom:0}
     var el = $('#plan');
     var p = R.plan;
     var stops = p && Array.isArray(p.stops) ? p.stops : [];
+    el.setAttribute('aria-busy', R.active && !p ? 'true' : 'false');
     el.replaceChildren(h('div', { 'class': 'plan-h' },
       h('h2', { text: t('planTitle') }),
       p ? h('span', { 'class': 'meta', text: [fmtDate(p.date), t('stops', { n: stops.length })].filter(Boolean).join(' · ') }) : null));
@@ -834,6 +966,8 @@ tr:last-child td{border-bottom:0}
           s.why ? h('div', { 'class': 'st-why', text: s.why }) : null,
           h('div', { 'class': 'st-tags' },
             s.free === true ? h('span', { 'class': 'tag free', text: t('free') }) : null,
+            s.priceUnknown ? h('span', { 'class': 'tag vno', title: t('priceTip'), text: t('priceUnknown') }) : null, // a place on a free-only day
+            s.who ? h('span', { 'class': 'tag who', title: t('whoTip'), text: String(s.who) }) : null, // an offer's eligibility
             s.transit ? h('span', { 'class': 'tag tr', text: t('transit') + ' · ' + s.transit }) : null,
             s.verified ? h('span', { 'class': 'tag vok', text: t('verified') }) : h('span', { 'class': 'tag vno', text: t('unverified') }))));
     })));
@@ -842,17 +976,24 @@ tr:last-child td{border-bottom:0}
     var c = p.checker;
     if (c) {
       var rounds = Number(c.rounds) || 1;
-      var issues = Array.isArray(c.issues) ? c.issues.filter(Boolean) : [];
       var ok = c.approved === true;
+      // approved: the graph issues the Checker's vetoes caught on the way (checker.fixed); not approved: what is still open
+      // (checker.issues); the review's pace / fit suggestions apart, never as fixed (checker.suggested / checker.notApplied)
+      var review = c.review != null ? String(c.review).trim() : '';
+      var lists = [[ok ? c.fixed : c.issues, ok ? 'fixedAlong' : 'openIssues'], [c.suggested, 'reviewAsked'], [c.notApplied, 'notApplied']];
       el.append(h('div', { 'class': 'verdict' + (ok ? '' : ' no') },
         ok ? '✓ ' + (rounds <= 1 ? t('approved1') : t('approved', { n: rounds })) : '✗ ' + t('rejected', { n: rounds }),
-        issues.length ? h('div', { 'class': 'sub', text: ok ? t('fixedAlong') : t('openIssues') }) : null,
-        issues.length ? h('ul', null, issues.map(function (x) { return h('li', { text: typeof x === 'string' ? x : JSON.stringify(x) }); })) : null));
+        review ? h('div', { 'class': 'review', text: review }) : null,
+        lists.map(function (l) {
+          var list = Array.isArray(l[0]) ? l[0].filter(Boolean) : [];
+          return list.length ? [h('div', { 'class': 'sub', text: t(l[1]) }), h('ul', null, list.map(function (x) { return h('li', { text: typeof x === 'string' ? x : JSON.stringify(x) }); }))] : null;
+        })));
     }
   }
 
   /* ---------- graph ---------- */
   function kindLabel(k) { return I18N[lang]['k_' + k] ? t('k_' + k) + (lang === 'zh' ? ' · ' + k : '') : (k || t('k_Other')); }
+  function tipKind(n, full) { return kindLabel(n.kind) + (n.title && n.title !== full ? ' · ' + full : ''); }
   function nodeStyle(kind) {
     var base = KIND[kind] || { shape: 'dot', size: 9, color: { background: '#c9c1b5', border: '#a39a8c' } };
     var st = JSON.parse(JSON.stringify(base));
@@ -862,9 +1003,9 @@ tr:last-child td{border-bottom:0}
     return st;
   }
   function tipEl(n, full) {
-    return h('div', { 'class': 'vtip' },
-      h('b', { text: String(n.title || full) }),
-      h('div', { 'class': 'k', text: kindLabel(n.kind) + (n.title && n.title !== full ? ' · ' + full : '') }));
+    var k = h('div', { 'class': 'k', text: tipKind(n, full) });
+    tips.push({ el: k, n: n, full: full }); // re-translated by applyLang
+    return h('div', { 'class': 'vtip' }, h('b', { text: String(n.title || full) }), k);
   }
   function visOpts(big) {
     return {
@@ -886,7 +1027,7 @@ tr:last-child td{border-bottom:0}
       }
     };
   }
-  function graphMsg(text) { var m = $('#gmsg'); m.textContent = text || ''; m.hidden = !text; }
+  function graphMsg(content) { var m = $('#gmsg'); m.replaceChildren(); appendKid(m, content || null); m.hidden = !content; }
   function countGraph(d) { return { n: d && Array.isArray(d.nodes) ? d.nodes.length : 0, e: d && Array.isArray(d.edges) ? d.edges.length : 0 }; }
   function renderGraphInfo() {
     var info = $('#ginfo');
@@ -910,8 +1051,9 @@ tr:last-child td{border-bottom:0}
   function drawGraph(data, mode) {
     graphData = data || { nodes: [], edges: [] }; graphMode = mode;
     renderGraphInfo(); renderLegend();
-    if (visState !== 'ready') { if (visState === 'fail') graphMsg(t('graphFail')); return; }
+    if (visState !== 'ready') { if (visState === 'fail') graphMsg(tr('graphFail')); return; }
     var nodes = [], seen = {};
+    tips = [];
     (Array.isArray(graphData.nodes) ? graphData.nodes : []).forEach(function (n) {
       if (!n || n.id == null) return;
       var id = String(n.id);
@@ -932,7 +1074,7 @@ tr:last-child td{border-bottom:0}
       if (lab) { ed.title = h('div', { text: lab }); if (showLabels) ed.label = lab; }
       edges.push(ed);
     });
-    if (!nodes.length) { if (network) network.setData({ nodes: [], edges: [] }); graphMsg(t('graphEmpty')); return; }
+    if (!nodes.length) { if (network) network.setData({ nodes: [], edges: [] }); graphMsg(tr('graphEmpty')); return; }
     graphMsg('');
     var big = nodes.length > 150;
     try {
@@ -946,25 +1088,25 @@ tr:last-child td{border-bottom:0}
         network.setOptions(visOpts(big));
         network.setData({ nodes: nodes, edges: edges });
       }
-    } catch (e) { graphMsg(t('graphFail') + ' · ' + (e && e.message)); }
+    } catch (e) { graphMsg([tr('graphFail'), ' · ' + (e && e.message)]); }
   }
   function onVisReady() {
     if (visState === 'ready') return;
     if (window.vis && window.vis.Network) {
       visState = 'ready';
       if (graphData) drawGraph(graphData, graphMode);
-    } else { visState = 'fail'; graphMsg(t('graphFail')); }
+    } else { visState = 'fail'; graphMsg(tr('graphFail')); }
   }
   (function () {
     var vs = document.getElementById('visjs');
     if (window.vis && window.vis.Network) { visState = 'ready'; return; }
     if (vs) {
       vs.addEventListener('load', onVisReady);
-      vs.addEventListener('error', function () { visState = 'fail'; graphMsg(t('graphFail')); });
+      vs.addEventListener('error', function () { visState = 'fail'; graphMsg(tr('graphFail')); });
     }
-    setTimeout(function () { if (visState === 'loading') { if (window.vis && window.vis.Network) onVisReady(); else { visState = 'fail'; graphMsg(t('graphFail')); } } }, 20000);
+    setTimeout(function () { if (visState === 'loading') { if (window.vis && window.vis.Network) onVisReady(); else { visState = 'fail'; graphMsg(tr('graphFail')); } } }, 20000);
   })();
-  graphMsg(t('graphLoading'));
+  graphMsg(tr('graphLoading'));
   function loadOverview() {
     fetch('/api/graph/overview', { cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
@@ -974,7 +1116,7 @@ tr:last-child td{border-bottom:0}
       })
       .catch(function () {
         overviewState = 'fail';
-        if (!graphData) { graphMsg(t('graphErr')); renderGraphInfo(); }
+        if (!graphData) { graphMsg(tr('graphErr')); renderGraphInfo(); }
       });
   }
   $('#gOverview').addEventListener('click', function () { if (overviewData) drawGraph(overviewData, 'overview'); });
@@ -984,7 +1126,10 @@ tr:last-child td{border-bottom:0}
   function showTab(name, manual) {
     activeTab = name;
     if (manual) lastManualTab = Date.now();
-    $$('#tabs button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-tab') === name); });
+    $$('#tabs button').forEach(function (b) {
+      var on = b.getAttribute('data-tab') === name;
+      b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
     ['graph', 'dash', 'cypher'].forEach(function (n) { $('#p-' + n).classList.toggle('on', n === name); });
     if (name === 'graph' && network) requestAnimationFrame(function () { network.redraw(); network.fit(); });
     if (name === 'dash' && dashState !== 'ok' && dashState !== 'loading') loadDash();
@@ -1012,8 +1157,10 @@ tr:last-child td{border-bottom:0}
   }
   function renderDash() {
     var el = $('#dash');
+    // the subtitle names Neo4j only when every panel came from Aura (dash.engine === 'neo4j')
+    var sub = dashState === 'ok' && dash ? (dash.engine === 'neo4j' ? 'dashSubNeo' : 'dashSubLocal') : 'dashSub';
     var head = h('div', { 'class': 'dhead' },
-      h('div', null, h('h3', { text: t('dashTitle') }), h('p', { text: t('dashSub') })),
+      h('div', null, h('h3', { text: t('dashTitle') }), h('p', { text: t(sub) })),
       h('button', { type: 'button', 'class': 'btn', text: t('refresh'), onclick: loadDash }));
     el.replaceChildren(head);
     if (dashState === 'loading' || dashState === 'idle') { el.append(h('p', { 'class': 'empty-note', text: t('loading') })); return; }
@@ -1028,7 +1175,7 @@ tr:last-child td{border-bottom:0}
         h('h4', { text: title || 'Query' }),
         q.cypher ? h('details', null, h('summary', { text: 'Cypher' }), h('pre', { 'class': 'code', text: String(q.cypher) })) : null,
         rows.length ? h('div', { 'class': 'tw' }, h('table', null,
-          h('thead', null, h('tr', null, cols.map(function (c) { return h('th', { text: String(c) }); }))),
+          h('thead', null, h('tr', null, cols.map(function (c) { return h('th', { text: I18N.en['col_' + c] ? t('col_' + c) : String(c) }); }))),
           h('tbody', null, rows.slice(0, 100).map(function (r) {
             var arr = Array.isArray(r) ? r : (r && typeof r === 'object' ? cols.map(function (c) { return r[c]; }) : [r]);
             return h('tr', null, arr.map(function (v) {
@@ -1041,11 +1188,19 @@ tr:last-child td{border-bottom:0}
 
   /* ---------- cypher log ---------- */
   function renderCnt() { var c = $('#cypherCnt'); c.hidden = !unseenCypher; c.textContent = unseenCypher > 99 ? '99+' : String(unseenCypher); }
+  // the engine that actually answered: 'Neo4j Aura' or one of the local-graph fallbacks
+  function isNeo(ev) { return ev.engine != null ? /^neo4j/i.test(String(ev.engine)) : !!(status && status.neo4j && status.neo4j.mode === 'neo4j'); }
+  function engineText(e) {
+    e = String(e == null ? '' : e);
+    var k = /^neo4j/i.test(e) ? 'eng_neo' : /not configured/i.test(e) ? 'eng_cfg' : /failed/i.test(e) ? 'eng_failed' : /unavailable/i.test(e) ? 'eng_down' : null;
+    return k ? t(k) : e;
+  }
   function cyEntry(ev) {
     var agent = canon(ev.agent || 'Scout');
     return h('div', { 'class': 'cy' },
       h('div', { 'class': 'cyh' },
         h('span', { 'class': 'who', style: '--c:' + colorOf(agent), text: agent }),
+        ev.engine != null ? h('span', { 'class': 'eng' + (ev._neo ? ' neo' : ''), title: String(ev.engine), text: engineText(ev.engine) }) : null,
         h('span', { 'class': 'rows', text: t('rows', { n: fmtNum(ev.rows) }) }),
         h('span', { text: ev.ms != null ? Math.round(Number(ev.ms)) + ' ms' : '' }),
         h('span', { 'class': 'tm', text: ev._t || '' })),
@@ -1057,10 +1212,10 @@ tr:last-child td{border-bottom:0}
     el.replaceChildren.apply(el, cypherLog.map(cyEntry));
   }
   function onCypher(ev) {
-    ev._t = fmtTime(ev.at);
+    ev._t = fmtTime(ev.at); ev._neo = isNeo(ev);
     cypherLog.unshift(ev);
     if (cypherLog.length > 100) cypherLog.length = 100;
-    R.cypher++;
+    R.cypher++; if (ev._neo) R.cyNeo++;
     var el = $('#cylog');
     if (cypherLog.length === 1) el.replaceChildren();
     el.insertBefore(cyEntry(ev), el.firstChild);
@@ -1073,9 +1228,13 @@ tr:last-child td{border-bottom:0}
   var es = null, connBad = false;
   function renderConn() { var c = $('#conn'); c.hidden = !connBad; c.textContent = t('reconnecting'); }
   function connect() {
-    try { es = new EventSource('/api/stream'); }
+    try { es = new EventSource('/api/stream?client=' + encodeURIComponent(clientId)); }
     catch (e) { connBad = true; renderConn(); setTimeout(connect, 3000); return; }
-    es.onopen = function () { if (connBad) loadStatus(); connBad = false; renderConn(); };
+    es.onopen = function () {
+      // events sent while the stream was down are not replayed
+      if (connBad) { loadStatus(); if (R.active) addSys(tr('connLost'), 'err'); }
+      connBad = false; renderConn();
+    };
     es.onerror = function () {
       connBad = true; renderConn();
       if (es.readyState === 2) { try { es.close(); } catch (e) {} setTimeout(connect, 3000); }
@@ -1087,7 +1246,9 @@ tr:last-child td{border-bottom:0}
   }
   function handle(ev) {
     if (!ev || typeof ev !== 'object') return;
-    if (ev.type === 'status') { status = ev; statusState = 'ok'; renderPills(); renderTransport(); renderAgents(); return; }
+    if (ev.type === 'status') { status = ev; statusState = 'ok'; onStatus(); return; }
+    // an error that belongs to no run (a Band handler failure) never ends this tab's run: a small notice at most
+    if (ev.type === 'error' && ev.runId == null) { if (R.active) addSys(tr('roomNotice', { msg: ev.message || 'unknown' })); return; }
     if (ev.runId != null) {
       if (awaiting && !R.id) { if (buffer.length < 1000) buffer.push(ev); return; }
       if (!R.id || String(ev.runId) !== R.id) return;
@@ -1106,12 +1267,12 @@ tr:last-child td{border-bottom:0}
           break;
         case 'plan': R.plan = ev.plan || null; renderPlan(); break;
         case 'error':
-          addSys(t('runError', { msg: ev.message || 'unknown' }), 'err');
+          addSys(tr('runError', { msg: ev.message || 'unknown' }), 'err');
           finishRun(null);
           break;
         case 'done':
           finishRun(ev.ms);
-          addSys(t('doneIn', { s: sec(R.ms != null ? R.ms : R.endAt - R.t0) }), 'done');
+          addSys(tr('doneIn', { s: sec(R.ms != null ? R.ms : R.endAt - R.t0) }), 'done');
           break;
         default: break;
       }

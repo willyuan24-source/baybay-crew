@@ -1,27 +1,40 @@
 /**
- * BAYLINK → knowledge graph export (run inside the BAYLINK checkout so its data and TypeScript modules resolve):
+ * BAYLINK → knowledge graph export. Needs a checkout of BAYLINK (https://github.com/willyuan24-source/baylink-web) with its
+ * dependencies installed, so its data and TypeScript modules resolve; run it with that checkout's tsx:
  *
- *   cd C:/Users/willy/baylink-opus && node node_modules/tsx/dist/cli.mjs C:/Users/willy/hack2026/baybay-crew/scripts/export-from-baylink.mts
+ *   cd <baylink-web checkout> && node node_modules/tsx/dist/cli.mjs <baybay-crew>/scripts/export-from-baylink.mts
  *
- * Writes data/graph.json in the BAYBAY Crew project: nodes + relationships, ready for src/load-neo4j.mjs.
- * Sources (all real, all already published on https://www.baylink.us):
+ * The checkout is BAYLINK_DIR, else the first argument, else the current directory.
+ * Writes data/graph.json next to this script (../data/graph.json): nodes + relationships, ready for src/load-neo4j.mjs.
+ * Sources (all real, all already published on https://www.baylink.us; counts as of the 2026-09-29 export):
  *   public/planner-catalog.json          267 Bay Area events (dates, cost, age limits, official links) + planner places
  *   public/opus-bay/sf/v1/places.json    1033 San Francisco places from OpenStreetMap (incl. 72 neighbourhoods)
- *   public/opus-bay/sf/v1/transit*.json  cable cars, the F-line, Muni N / M, the sightseeing loop, with their stops
+ *   public/opus-bay/sf/v1/transit*.json  cable cars, the F-line, Muni N / M, with their stops (lines with an OpenStreetMap
+ *                                        route relation only: the game's sightseeing loop is not a real line)
  *   public/opus-bay/sf/v1/live.json      BAYLINK's verified free / reduced museum, park and transit offers
  *   src/opus-bay/realsf/eventVenues.ts   where each San Francisco catalog event happens (OSM-checked venue points)
  *   src/data/autumn-release-openings.json new shops and restaurants (autumn 2026)
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { unproject } from 'file:///C:/Users/willy/baylink-opus/src/opus-bay/core/geo.ts';
-import { EVENT_VENUES } from 'file:///C:/Users/willy/baylink-opus/src/opus-bay/realsf/eventVenues.ts';
-import { loadLocale, translateText } from 'file:///C:/Users/willy/baylink-opus/src/i18n/locale.ts';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const OUT = 'C:/Users/willy/hack2026/baybay-crew/data/graph.json';
-const read = (p: string) => JSON.parse(readFileSync(resolve(p), 'utf8'));
+const BAYLINK = resolve(process.env.BAYLINK_DIR || process.argv[2] || process.cwd());
+const OUT = fileURLToPath(new URL('../data/graph.json', import.meta.url));
+const read = (p: string) => JSON.parse(readFileSync(resolve(BAYLINK, p), 'utf8'));
+const mod = (p: string) => import(pathToFileURL(resolve(BAYLINK, p)).href);
+type Venue = { id: string; name: { zh: string; en: string }; x: number; z: number; sourceUrl?: string; placeId?: string; events: string[] };
+const { unproject } = await mod('src/opus-bay/core/geo.ts');
+const { EVENT_VENUES } = (await mod('src/opus-bay/realsf/eventVenues.ts')) as { EVENT_VENUES: Venue[] };
+const { loadLocale, translateText } = await mod('src/i18n/locale.ts');
 await loadLocale('en');
 const en = (zh: string) => { try { return translateText(zh, 'en'); } catch { return zh; } };
+// links as published, minus ad-click / campaign tracking parameters
+const TRACKING = /^(utm_|mc_|sjrn|_ga$|_gl$|gclid$|gbraid$|wbraid$|dclid$|fbclid$|msclkid$|yclid$|igshid$|mkt_tok$|_hsenc$|_hsmi$)/i;
+const cleanUrl = (u: unknown) => {
+  if (typeof u !== 'string' || !/^https?:\/\/[^?]*\?/.test(u)) return u;
+  try { const x = new URL(u); const ks = [...x.searchParams.keys()].filter(k => TRACKING.test(k)); if (!ks.length) return u; ks.forEach(k => x.searchParams.delete(k)); return x.href; } catch { return u; }
+};
 
 type Props = Record<string, unknown>;
 const nodes = new Map<string, { id: string; label: string; props: Props }>();
@@ -45,11 +58,12 @@ for (const h of hoods) rel(`Neighborhood:${h.id}`, 'IN_CITY', sfCity);
 
 // --- transit: lines, stations, NEXT ------------------------------------------------------------------------------
 type Stop = { id: string; name: { zh: string; en: string }; x: number; z: number };
-const lines = [...read('public/opus-bay/sf/v1/transit.json').lines, ...read('public/opus-bay/sf/v1/transit-w4.json').lines] as { id: string; kind: string; name: { zh: string; en: string }; color: string; stops: Stop[] }[];
+const lines = [...read('public/opus-bay/sf/v1/transit.json').lines, ...read('public/opus-bay/sf/v1/transit-w4.json').lines] as { id: string; kind: string; name: { zh: string; en: string }; color: string; osmRelation?: number; stops: Stop[] }[];
 const stations: (Stop & { key: string })[] = [];
 const seenLine = new Set<string>();
 for (const l of lines) {
-  if (seenLine.has(l.id)) continue; seenLine.add(l.id);
+  // real lines only: the game's sightseeing loop (sf-loop) has no OpenStreetMap route relation
+  if (seenLine.has(l.id) || l.id === 'sf-loop' || !l.osmRelation) continue; seenLine.add(l.id);
   const lk = node('Line', l.id, { name: l.name.zh, nameEn: l.name.en, kind: l.kind, color: l.color });
   let prev: string | null = null;
   l.stops.forEach((s, i) => {
@@ -70,17 +84,17 @@ const nearStations = (key: string, x: number, z: number, max = 2, withinM = 700)
 const KEEP = new Set(['bridge', 'island', 'landmark', 'skyscraper', 'park', 'museum', 'waterfront', 'plaza', 'civic', 'stadium', 'historic', 'garden', 'beach', 'trail', 'hill', 'tower', 'zoo', 'attraction', 'viewpoint', 'peak', 'campus']);
 for (const p of places) {
   if (!KEEP.has(p.kind)) continue;
-  const k = node('Place', p.id, { name: p.name.zh, nameEn: p.name.en, kind: p.kind, ...ll(p.x, p.z), x: p.x, z: p.z, guide: p.guideSlug ? `https://www.baylink.us/guides/${p.guideSlug}` : null, osm: p.sourceUrl ?? null });
+  const k = node('Place', p.id, { name: p.name.zh, nameEn: p.name.en, kind: p.kind, ...ll(p.x, p.z), x: p.x, z: p.z, guide: p.guideSlug ? `https://www.baylink.us/guides/${p.guideSlug}` : null, osm: cleanUrl(p.sourceUrl) ?? null });
   const h = hoodAt(p.x, p.z); if (h) rel(k, 'IN', `Neighborhood:${h.id}`);
   nearStations(k, p.x, p.z);
 }
 
 // --- events -----------------------------------------------------------------------------------------------------
 const catalog = read('public/planner-catalog.json');
-const venueOf = new Map<string, (typeof EVENT_VENUES)[number]>();
+const venueOf = new Map<string, Venue>();
 for (const v of EVENT_VENUES) for (const id of v.events) venueOf.set(id, v);
 for (const v of EVENT_VENUES) {
-  const k = node('Venue', v.id, { name: v.name.zh, nameEn: v.name.en, ...ll(v.x, v.z), x: v.x, z: v.z, osm: v.sourceUrl });
+  const k = node('Venue', v.id, { name: v.name.zh, nameEn: v.name.en, ...ll(v.x, v.z), x: v.x, z: v.z, osm: cleanUrl(v.sourceUrl) });
   const h = hoodAt(v.x, v.z); if (h) rel(k, 'IN', `Neighborhood:${h.id}`);
   if (v.placeId && nodes.has(`Place:${v.placeId}`)) rel(k, 'IS_PLACE', `Place:${v.placeId}`);
   nearStations(k, v.x, v.z);
@@ -99,7 +113,7 @@ for (const e of catalog.events as Props[]) {
     familyFriendly: minAge === null && /亲子|孩子|儿童|家庭|family|kids/i.test(`${audience.join(' ')} ${e.summary ?? ''} ${e.title}`),
     reservation: planning.reservation ?? null, setting: planning.setting ?? null,
     summary: e.summary, summaryEn: en(String(e.summary ?? '')), audience, venueText: e.venue, city: e.city,
-    url: e.officialUrl ?? null, baylink: `https://www.baylink.us/events/${id}`, verifiedAt: e.verifiedAt ?? null,
+    url: cleanUrl(e.officialUrl) ?? null, baylink: `https://www.baylink.us/events/${id}`, verifiedAt: e.verifiedAt ?? null,
   });
   const city = String(e.city ?? 'Bay Area');
   if (!cities.has(city)) cities.set(city, city === 'San Francisco' ? sfCity : node('City', city.toLowerCase().replace(/[^a-z0-9]+/g, '-'), { name: city, nameEn: city }));
@@ -112,16 +126,16 @@ for (const e of catalog.events as Props[]) {
 // --- offers (BAYLINK's verified free / reduced admissions) --------------------------------------------------------
 for (const o of read('public/opus-bay/sf/v1/live.json').offers as Props[]) {
   const t = o.title as { zh: string; en: string }, who = o.who as { zh: string; en: string }, req = o.requirement as { zh: string; en: string };
-  const k = node('Offer', String(o.id), { title: t.zh, titleEn: t.en, free: !!o.free, from: o.from ?? null, to: o.to ?? null, weekdays: o.weekdays ?? null, who: who?.zh, whoEn: who?.en, requirement: req?.zh, requirementEn: req?.en, baylink: `https://www.baylink.us${o.href}`, url: (o.source as Props)?.url ?? null, kind: o.kind });
+  const k = node('Offer', String(o.id), { title: t.zh, titleEn: t.en, free: !!o.free, from: o.from ?? null, to: o.to ?? null, weekdays: o.weekdays ?? null, who: who?.zh, whoEn: who?.en, requirement: req?.zh, requirementEn: req?.en, baylink: `https://www.baylink.us${o.href}`, url: cleanUrl((o.source as Props)?.url) ?? null, kind: o.kind });
   const p = o.place as { id?: string; x?: number; z?: number } | undefined;
   if (p?.id && nodes.has(`Place:${p.id}`)) rel(k, 'AT', `Place:${p.id}`);
-  else if (p && typeof p.x === 'number' && typeof p.z === 'number') { const h = hoodAt(p.x, p.z!); if (h) rel(k, 'IN', `Neighborhood:${h.id}`); nearStations(k, p.x, p.z!); }
+  else if (p && typeof p.x === 'number' && typeof p.z === 'number') { const h = hoodAt(p.x, p.z); if (h) rel(k, 'IN', `Neighborhood:${h.id}`); nearStations(k, p.x, p.z); }
 }
 
 // --- new openings --------------------------------------------------------------------------------------------------
 for (const o of read('src/data/autumn-release-openings.json') as Props[]) {
   const city = String(o.city ?? 'Bay Area');
-  const k = node('Opening', String(o.id), { name: o.name, category: o.category, status: o.status, address: o.address ?? null, dateLabel: o.dateLabel, summary: o.summary, url: o.officialUrl ?? null, city });
+  const k = node('Opening', String(o.id), { name: o.name, category: o.category, status: o.status, address: o.address ?? null, dateLabel: o.dateLabel, summary: o.summary, url: cleanUrl(o.officialUrl) ?? null, city });
   if (!cities.has(city)) cities.set(city, city === 'San Francisco' ? sfCity : node('City', city.toLowerCase().replace(/[^a-z0-9]+/g, '-'), { name: city, nameEn: city }));
   rel(k, 'IN_CITY', cities.get(city)!);
 }
@@ -130,4 +144,5 @@ mkdirSync(resolve(OUT, '..'), { recursive: true });
 const out = { exported: new Date().toISOString(), source: 'BAYLINK (https://www.baylink.us) catalog + Opus Bay San Francisco data (OpenStreetMap)', nodes: [...nodes.values()], rels };
 writeFileSync(OUT, JSON.stringify(out));
 const count = (l: string) => out.nodes.filter(n => n.label === l).length;
-console.log(`nodes ${out.nodes.length} rels ${rels.length}`, ['Event', 'Venue', 'Place', 'Neighborhood', 'Station', 'Line', 'Offer', 'Opening', 'City', 'Category'].map(l => `${l} ${count(l)}`).join(' · '));
+const unique = new Set(rels.map(r => `${r.from}|${r.type}|${r.to}`)).size;
+console.log(`${OUT}: nodes ${out.nodes.length} rels ${rels.length} (${unique} unique)`, ['Event', 'Venue', 'Place', 'Neighborhood', 'Station', 'Line', 'Offer', 'Opening', 'City', 'Category'].map(l => `${l} ${count(l)}`).join(' · '));

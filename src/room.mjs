@@ -13,30 +13,37 @@ import { emit } from './bus.mjs';
 export const AGENTS = ['BAYBAY', 'Scout', 'Planner', 'Checker'];
 const ENV_OF = { BAYBAY: 'BAYBAY', Scout: 'SCOUT', Planner: 'PLANNER', Checker: 'CHECKER' };
 
-export const encode = (text, payload) => (payload === undefined ? text : `${text}\n\n\`\`\`json\n${JSON.stringify(payload)}\n\`\`\``);
+// the payload always rides last, with every backtick escaped (\u0060), so the LAST ```json fence is the payload even when
+// the human line (the visitor's text) contains one
+export const encode = (text, payload) => (payload === undefined ? text : `${text}\n\n\`\`\`json\n${JSON.stringify(payload).replace(/`/g, '\\u0060')}\n\`\`\``);
 export function decode(content) {
   const s = String(content ?? '');
-  const m = /```json\s*([\s\S]*?)```\s*$/.exec(s);
+  const i = s.lastIndexOf('```json');
+  const m = i < 0 ? null : /^```json\s*([\s\S]*?)\s*```\s*$/.exec(s.slice(i));
   let payload = null;
   if (m) { try { payload = JSON.parse(m[1]); } catch { payload = null; } }
-  return { text: m ? s.slice(0, m.index).trim() : s.trim(), payload };
+  return { text: m ? s.slice(0, i).trim() : s.trim(), payload };
 }
 
 class LocalRoom {
-  constructor() { this.mode = 'local'; this.roomId = null; this.handlers = new Map(); }
+  constructor() { this.mode = 'local'; this.roomId = null; this.handlers = new Map(); this.seq = 0; }
   async start() { return this; }
   join(name, handler) { this.handlers.set(name, handler); }
   async send(from, text, to, payload, runId) {
     const content = `${to.map(t => `@${t}`).join(' ')} ${encode(text, payload)}`;
     emit({ type: 'room', runId, from, to, kind: 'message', text, payload: summarize(payload) });
+    // as in Band: delivered later (never inside send), never to the sender itself, and only the four agents speak as agents
+    const sender = AGENTS.includes(from) ? from : 'User';
     for (const name of to) {
       const h = this.handlers.get(name);
-      if (h) setTimeout(() => h({ id: `local-${Date.now()}`, from, ...decode(content.replace(/^(@\S+\s)+/, '')) }).catch(e => emit({ type: 'error', runId, message: `${name}: ${e.message}` })), 50);
+      if (!h || name === from) continue;
+      const msg = { id: `local-${++this.seq}`, from: sender, ...decode(content.replace(/^(@\S+\s)+/, '')) };
+      setTimeout(() => Promise.resolve().then(() => h(msg)).catch(e => emit({ type: 'error', runId: msg.payload?.runId ?? runId ?? null, message: `${name}: ${e.message}` })), 50);
     }
   }
   async event(from, kind, text, runId) { emit({ type: 'room', runId, from, to: [], kind, text }); }
   async close() {}
-  info() { return { mode: 'local', room: null, agents: AGENTS.map(n => ({ name: n, role: ROLE[n], ok: true })) }; }
+  info() { return { mode: 'local', room: null, agents: AGENTS.map(n => ({ name: n, role: ROLE[n], ok: true })), ok: true }; }
 }
 
 class BandRoom {
@@ -72,28 +79,37 @@ class BandRoom {
   }
   join(name, handler) { this.handlers.set(name, handler); }
   poll(name) {
-    const client = this.clients.get(name);
+    const api = this.clients.get(name).agentApiMessages;
+    // Band delivers at least once and serves failed messages again: each id is handled once; a repeat is only marked processed
+    // (in a new attempt: /processed needs an open one, and /next keeps serving the oldest unprocessed message until then)
+    const seen = new Set();
     let busy = false;
     const tick = async () => {
       if (busy) return; busy = true;
       try {
-        const r = await client.agentApiMessages.getAgentNextMessage(this.roomId);
+        const r = await api.getAgentNextMessage(this.roomId);
         const m = r?.data ?? r;
-        if (m && m.id) {
+        if (m?.id && seen.has(m.id)) {
+          await api.markAgentMessageProcessing(this.roomId, m.id).catch(() => {});
+          await api.markAgentMessageProcessed(this.roomId, m.id).catch(() => {});
+        } else if (m?.id) {
+          seen.add(m.id);
+          if (seen.size > 500) seen.delete(seen.values().next().value);
           const senderId = m.sender_id ?? m.senderId ?? m.sender?.id;
           const me = this.who.get(name)?.id;
-          await client.agentApiMessages.markAgentMessageProcessing(this.roomId, m.id).catch(() => {});
+          const dec = decode(String(m.content ?? '').replace(/^(@[^\s]+\s+)+/, ''));
+          await api.markAgentMessageProcessing(this.roomId, m.id).catch(() => {});
           try {
             if (senderId !== me) {
-              const from = [...this.who].find(([, w]) => w.id === senderId)?.[0] ?? (m.sender_name ?? m.senderName ?? 'User');
-              const content = String(m.content ?? '').replace(/^(@[^\s]+\s+)+/, '');
+              // a sender is an agent only by its Band id; anyone else in the room (whatever their display name) is a 'User'
+              const from = [...this.who].find(([, w]) => senderId && w.id === senderId)?.[0] ?? 'User';
               const h = this.handlers.get(name);
-              if (h) await h({ id: m.id, from, ...decode(content) });
+              if (h) await h({ id: m.id, from, ...dec });
             }
-            await client.agentApiMessages.markAgentMessageProcessed(this.roomId, m.id).catch(() => {});
+            await api.markAgentMessageProcessed(this.roomId, m.id).catch(() => {});
           } catch (e) {
-            await client.agentApiMessages.markAgentMessageFailed(this.roomId, m.id, { error: String(e.message).slice(0, 200) }).catch(() => {});
-            emit({ type: 'error', runId: null, message: `${name}: ${e.message}` });
+            await api.markAgentMessageFailed(this.roomId, m.id, { error: String(e.message).slice(0, 200) }).catch(() => {});
+            emit({ type: 'error', runId: dec.payload?.runId ?? null, message: `${name}: ${e.message}` });
           }
         }
         this.ok.set(name, true);
@@ -116,7 +132,11 @@ class BandRoom {
     catch (e) { console.error(`[band] event ${kind} from ${from}:`, e?.statusCode ?? '', String(e?.message).slice(0, 160)); }
   }
   async close() { this.timers.forEach(clearInterval); }
-  info() { return { mode: 'band', room: this.roomId, agents: AGENTS.map(n => ({ name: n, role: ROLE[n], ok: this.ok.get(n) !== false, id: this.who.get(n)?.id })) }; }
+  // for the browser: a short room id, no agent ids
+  info() {
+    const agents = AGENTS.map(n => ({ name: n, role: ROLE[n], ok: this.ok.get(n) !== false }));
+    return { mode: 'band', room: this.roomId ? `${String(this.roomId).slice(0, 8)}…` : null, agents, ok: agents.every(a => a.ok) };
+  }
 }
 
 const ROLE = { BAYBAY: 'host', Scout: 'graph scout', Planner: 'planner', Checker: 'checker' };

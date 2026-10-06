@@ -1,8 +1,10 @@
 <!doctype html>
-<html><head><meta charset="utf-8"><title>slides</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>BAYBAY Crew · slides</title>
 <style>
   * { box-sizing: border-box; margin: 0; }
-  html, body { width: 1440px; height: 900px; overflow: hidden; background: #faf7f2; font-family: "Segoe UI", system-ui, sans-serif; color: #1d2b2a; }
+  /* a fixed 1440×900 stage, scaled to fit the window (1:1 at 1440×900, where demo/record.mjs captures it) */
+  html { height: 100%; overflow: hidden; background: #faf7f2; }
+  body { width: 1440px; height: 900px; overflow: hidden; transform-origin: 0 0; background: #faf7f2; font-family: "Segoe UI", system-ui, sans-serif; color: #1d2b2a; }
   .slide { display: none; width: 1440px; height: 900px; position: relative; }
   body[data-s="title"] #title, body[data-s="arch"] #arch, body[data-s="end"] #end { display: block; }
   #title { background: url(key.webp) center/cover; }
@@ -55,7 +57,7 @@
     <p class="veto">↩ Checker can veto and send the plan back to Planner</p>
   </div>
   <div class="below">
-    <div class="box n"><b>Neo4j Aura · 1,594 nodes · 3,053 rels</b><p>BAYLINK's real catalog: 267 dated events, 72 neighbourhoods, 161 stations on 7 lines, free-admission offers. <code>(:Event)-[:AT]->(:Venue)-[:NEAR]->(:Station)</code></p></div>
+    <div class="box n"><b>Neo4j Aura · 1,577 nodes · 2,894 rels</b><p>BAYLINK's real catalog: 267 dated events, 72 neighbourhoods, 145 stations on 6 lines, free / reduced-admission offers. <code>(:Event)-[:AT]->(:Venue)-[:NEAR]->(:Station)</code></p></div>
     <div class="box c"><b>Crusoe Managed Inference</b><p>Open models, one per agent: DeepSeek-V4-Flash (Scout), DeepSeek-V4-Pro (Planner), Gemma 4 (Checker). Every call shown with model + latency.</p></div>
   </div>
 </section>
@@ -66,5 +68,26 @@
   <div class="pills" style="justify-content:center"><span class="pill c">⚡ Crusoe</span><span class="pill n">◉ Neo4j</span><span class="pill b">▣ Band</span></div>
   <p class="gh">github.com/willyuan24-source/baybay-crew</p>
 </section>
-<script>const h=location.hash.slice(1);if(h)document.body.dataset.s=h;addEventListener("keydown",e=>{const o=["title","arch","end"];let i=o.indexOf(document.body.dataset.s);if(e.key==="ArrowRight")i=Math.min(2,i+1);if(e.key==="ArrowLeft")i=Math.max(0,i-1);document.body.dataset.s=o[i];});</script>
+<script>
+// #title | #arch | #end; → / Space / PageDown / a click on the right two thirds = next, ← / PageUp / a click on the left third = back
+const S = ["title", "arch", "end"];
+const show = s => {
+  if (!S.includes(s)) s = S[0];
+  document.body.dataset.s = s;
+  if (location.hash.slice(1) !== s) try { history.replaceState(null, "", "#" + s); } catch { /* file:// in some browsers */ }
+};
+const step = d => show(S[Math.max(0, Math.min(S.length - 1, S.indexOf(document.body.dataset.s) + d))]);
+const fit = () => {
+  const k = Math.min(innerWidth / 1440, innerHeight / 900);
+  document.body.style.transform = k === 1 ? "" : `translate(${(innerWidth - 1440 * k) / 2}px, ${(innerHeight - 900 * k) / 2}px) scale(${k})`;
+};
+addEventListener("resize", fit); fit();
+addEventListener("hashchange", () => show(location.hash.slice(1)));
+addEventListener("keydown", e => {
+  const d = { ArrowRight: 1, PageDown: 1, " ": 1, ArrowLeft: -1, PageUp: -1 }[e.key];
+  if (d) { e.preventDefault(); step(d); } else if (e.key === "Home") show(S[0]); else if (e.key === "End") show(S.at(-1));
+});
+addEventListener("click", e => step(e.clientX < innerWidth / 3 ? -1 : 1));
+if (location.hash) show(location.hash.slice(1));
+</script>
 </body></html>

@@ -1,3 +1,7 @@
 node_modules/
 .env
+.env.*
+!.env.example
+*.log
+demo/out/
 HANDOFF.local.md
