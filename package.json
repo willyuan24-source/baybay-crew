@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "BAYBAY Crew: four agents (BAYBAY host, Scout, Planner, Checker) coordinate in a Band room to plan a real San Francisco day from a Neo4j graph of BAYLINK's catalog, reasoning on Crusoe Managed Inference. Winner of Best Use of Band and Best Use of Neo4j, The AI Conference Hack Day 2026.",
+  "description": "BAYBAY Crew: four agents (BAYBAY host, Scout, Planner, Checker) coordinate in a Band room to plan a real San Francisco day from a Neo4j graph of BAYLINK's catalog, reasoning on Crusoe Managed Inference. Winner, Best Use of Neo4j, The AI Conference Hack Day 2026.",
   "license": "MIT",
   "engines": {
     "node": ">=22"

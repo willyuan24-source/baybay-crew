@@ -1,6 +1,6 @@
 # BAYBAY Crew — project handoff
 
-🏆 **Two prizes: Best Use of Band** ($1,000) **and Best Use of Neo4j** ($500 Neo4j Aura credits), The AI Conference Hack Day 2026 (Pier 48, San Francisco,
+🏆 **Winner — Best Use of Neo4j** ($500 Neo4j Aura credits), The AI Conference Hack Day 2026 (Pier 48, San Francisco,
 2026-09-29; 92 projects listed on HackerSquad). Built in about 3 hours (start ≈ 12:30, first commit 13:03, submitted 15:13 PDT) on top of
 BAYLINK (https://www.baylink.us). The judged version is tagged `hackday-2026-submission` (commit 7c842e7); later commits
 are fixes and docs.
@@ -268,9 +268,9 @@ key; create a Session with all four (and yourself) and put its id in `BAND_ROOM_
 
 ## 5. Result
 
-**Winner — Best Use of Band** and **Winner — Best Use of Neo4j.**
+**Winner — Best Use of Neo4j.**
 
-Winners: Crusoe overall 1st Thermal Crusoe, 2nd Safe Scribe, 3rd Deja · **Band Best Use: BAYBAY Crew** · **Neo4j Best Use: BAYBAY Crew** · Neo4j Best
+Winners: Crusoe overall 1st Thermal Crusoe, 2nd Safe Scribe, 3rd Deja · **Neo4j Best Use: BAYBAY Crew** · Neo4j Best
 Technical: CertAIn · Neo4j Most Creative: LineSignal · DuploCloud Best Agent: Harmony · Plaud: SiteSync · Vultr: SYNTH.
 
 ## 6. Known gaps (honest)

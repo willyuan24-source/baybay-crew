@@ -1,7 +1,6 @@
 # BAYBAY Crew 🦦 — real San Francisco days, planned by a crew of agents
 
-🏆 **Winner — Best Use of Band** and 🏆 **Winner — Best Use of Neo4j**, The AI Conference Hack Day 2026 (San Francisco,
-2026-09-29). Project page on HackerSquad:
+🏆 **Winner — Best Use of Neo4j**, The AI Conference Hack Day 2026 (San Francisco, 2026-09-29). Project page on HackerSquad:
 https://hackersquad.io/events/the-ai-conference-hack-day-2026/projects/cmun4peby00xmmw23i9kaxpun
 
 **Four agents coordinate in a Band room to plan a real day out in San Francisco from a Neo4j knowledge graph of BAYLINK's
